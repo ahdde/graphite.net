@@ -95,18 +95,18 @@ namespace ahd.Graphite.Test
             }
             
         }
-
+        
         [TestMethod]
-        [TestCategory("ManualIntegration")]
+        [TestCategory("Integration")]
         public async Task SendMetric()
         {
             var client = new GraphiteClient("graphite.mpdev.systems");
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             Console.WriteLine("done");
         }
-
+        
         [TestMethod]
-        [TestCategory("ManualIntegration")]
+        [TestCategory("Integration")]
         public async Task SendPickledMetric()
         {
             var client = new GraphiteClient("graphite.mpdev.systems", new PickleGraphiteFormatter());
