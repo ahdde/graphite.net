@@ -48,12 +48,12 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Razorvine.Pyrolite, Version=4.14.0.39984, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Razorvine.Pyrolite.4.14.0\lib\net40\Razorvine.Pyrolite.dll</HintPath>
+    <Reference Include="Razorvine.Pyrolite, Version=4.16.0.37516, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Razorvine.Pyrolite.4.16.0\lib\net40\Razorvine.Pyrolite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Razorvine.Serpent, Version=1.15.1.1693, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Razorvine.Serpent.1.15.1\lib\net40\Razorvine.Serpent.dll</HintPath>
+    <Reference Include="Razorvine.Serpent, Version=1.16.0.42115, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Razorvine.Serpent.1.16.0\lib\net40\Razorvine.Serpent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
