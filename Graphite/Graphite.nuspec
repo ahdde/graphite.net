@@ -16,7 +16,7 @@
       <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3"/>
       <dependency id="Newtonsoft.Json" version="9.0.1"/>
       <dependency id="Razorvine.Pyrolite" version="4.16.0"/>
-      <dependency id="Razorvine.Serpent" version="1.16.1"/>
+      <dependency id="Razorvine.Serpent" version="1.16.0"/>
     </dependencies>
   </metadata>
   <files>
