@@ -173,15 +173,15 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList and a consolidation function name.
-        // Valid function names are ‘sum’, ‘average’, ‘min’, and ‘max’.
-        // When a graph is drawn where width of the graph size in pixels is smaller than the number of datapoints to be graphed, 
-        // Graphite consolidates the values to to prevent line overlap.The consolidateBy() function changes the consolidation 
-        // function from the default of ‘average’ to one of ‘sum’, ‘max’, or ‘min’. This is especially useful in sales graphs, 
-        // where fractional values make no sense and a ‘sum’ of consolidated values is appropriate.
+        /// Valid function names are ‘sum’, ‘average’, ‘min’, and ‘max’.
+        /// When a graph is drawn where width of the graph size in pixels is smaller than the number of datapoints to be graphed, 
+        /// Graphite consolidates the values to to prevent line overlap.The consolidateBy() function changes the consolidation 
+        /// function from the default of ‘average’ to one of ‘sum’, ‘max’, or ‘min’. This is especially useful in sales graphs, 
+        /// where fractional values make no sense and a ‘sum’ of consolidated values is appropriate.
         /// </summary>
-        public SeriesListFunction ConsolidateBy(string function = "average")
+        public SeriesListFunction ConsolidateBy(ConsolidateFunction function = ConsolidateFunction.average)
         {
-            return Binary("consolidateBy", SingleQuote(function));
+            return Binary("consolidateBy", SingleQuote(function.ToString()));
         }
 
         /// <summary>
