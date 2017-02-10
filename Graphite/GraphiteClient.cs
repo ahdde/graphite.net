@@ -228,7 +228,7 @@ namespace ahd.Graphite
                 }
                 if (!String.IsNullOrEmpty(until))
                 {
-                    values.Add(new KeyValuePair<string, string>("from", until));
+                    values.Add(new KeyValuePair<string, string>("until", until));
                 }
                 if (template != null)
                 {
