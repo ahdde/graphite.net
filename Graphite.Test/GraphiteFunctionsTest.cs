@@ -106,6 +106,13 @@ namespace ahd.Graphite.Test
         }
 
         [TestMethod]
+        public void ConsolidateBy()
+        {
+            var series = _series.ConsolidateBy("max");
+            Assert.AreEqual("consolidateBy(metric,'max')", series.ToString());
+        }
+
+        [TestMethod]
         public void CountSeries()
         {
             var series = _series.CountSeries();
