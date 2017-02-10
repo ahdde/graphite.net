@@ -203,7 +203,7 @@ namespace ahd.Graphite
 
         public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null)
         {
-            return GetMetricsDataAsync(new[] {target}, from, until);
+            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints);
         }
 
         public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null)
