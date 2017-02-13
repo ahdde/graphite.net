@@ -45,6 +45,11 @@ namespace ahd.Graphite.Base
             return new SeriesListFunction(functionName, this, parameter1, parameter2);
         }
 
+        private SeriesListFunction Quaternary(string functionName, object parameter1, object parameter2, object parameter3)
+        {
+            return new SeriesListFunction(functionName, this, parameter1, parameter2, parameter3);
+        }
+
         /// <summary>
         /// Takes one metric or a wildcard seriesList and a string in quotes. Prints the string instead of the metric name in the legend.
         /// </summary>
@@ -94,9 +99,11 @@ namespace ahd.Graphite.Base
             return Ternary("aliasSub", DoubleQuote(search), DoubleQuote(replace));
         }
 
-        public SeriesListBase ApplyByNode(uint nodeNum, SeriesListFunction templateFunction, string newName)
+        public SeriesListBase ApplyByNode(uint nodeNum, SeriesListFunction templateFunction, string newName = null)
         {
-            throw new NotImplementedException();
+            return newName == null
+                ? Ternary("applyByNode", nodeNum, DoubleQuote(templateFunction.ToString()))
+                : Quaternary("applyByNode", nodeNum, DoubleQuote(templateFunction.ToString()), DoubleQuote(newName));
         }
 
         /// <summary>

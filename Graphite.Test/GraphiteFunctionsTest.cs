@@ -53,6 +53,15 @@ namespace ahd.Graphite.Test
         }
 
         [TestMethod]
+        public void ApplyByNode()
+        {
+            var innerCalc = GraphitePath.Parse("%.disk.bytes_free")
+                .DivideSeries(GraphitePath.Parse("%.disk.bytes_*").SumSeriesWithWildcards());
+            var applyByNode = GraphitePath.Parse("servers.*.disk.bytes_free").ApplyByNode(1, innerCalc);
+            Assert.AreEqual("applyByNode(servers.*.disk.bytes_free,1,\"divideSeries(%.disk.bytes_free,sumSeriesWithWildcards(%.disk.bytes_*))\")", applyByNode.ToString());
+        }
+
+        [TestMethod]
         public void AsPercent()
         {
             var asPercent = _series.AsPercent(1500);
