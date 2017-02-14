@@ -823,6 +823,15 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
+        /// This will add metrics together and return the sum at each datapoint. (See <see cref="Integral"/> for a sum over time)
+        /// </summary>
+        /// <returns></returns>
+        public SeriesListFunction Sum(params SeriesListBase[] series)
+        {
+            return new SeriesListFunction("sum", Merge(this, series));
+        }
+
+        /// <summary>
         /// Call sumSeries after inserting wildcards at the given position(s).
         /// </summary>
         public SeriesListFunction SumSeriesWithWildcards(params int[] positions)
