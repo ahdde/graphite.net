@@ -6,6 +6,7 @@ namespace ahd.Graphite.Base
 {
     public abstract class SeriesListBase
     {
+        /// <inheritdoc />
         public abstract override string ToString();
 
         private static object[] Merge<T>(object value, params T[] values)

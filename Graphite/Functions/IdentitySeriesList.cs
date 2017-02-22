@@ -15,6 +15,7 @@ namespace ahd.Graphite.Functions
 
         public string Name { get; }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"identity(\"{Name}\")";

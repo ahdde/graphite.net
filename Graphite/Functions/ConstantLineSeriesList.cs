@@ -14,6 +14,7 @@ namespace ahd.Graphite.Functions
 
         public double Value { get; }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"constantLine({Value})";

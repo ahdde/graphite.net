@@ -25,6 +25,7 @@ namespace ahd.Graphite.Base
 
         public string Name { get; }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return Name ?? String.Empty;

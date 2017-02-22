@@ -35,12 +35,14 @@ namespace ahd.Graphite
             return String.Equals(Series, other.Series) && Value.Equals(other.Value) && Timestamp.Equals(other.Timestamp);
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             return obj is Datapoint && Equals((Datapoint) obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked
@@ -51,11 +53,14 @@ namespace ahd.Graphite
                 return hashCode;
             }
         }
+
+        /// <inheritdoc />
         public static bool operator ==(Datapoint left, Datapoint right)
         {
             return left.Equals(right);
         }
 
+        /// <inheritdoc />
         public static bool operator !=(Datapoint left, Datapoint right)
         {
             return !left.Equals(right);
