@@ -629,6 +629,9 @@ namespace ahd.Graphite.Test
             var sumSeries = _series.Sum(new GraphitePath("test1"), new GraphitePath("test2"));
             Assert.AreEqual("sum(metric,test1,test2)", sumSeries.ToString());
 
+            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
+            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            Assert.AreEqual("sum(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] {serie1, serie2}.Sum().ToString());
         }
 
         [TestMethod]
