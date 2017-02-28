@@ -701,5 +701,19 @@ namespace ahd.Graphite.Test
             var series = _series.WeightedAverage(_series, 1, 3, 4);
             Assert.AreEqual("weightedAverage(metric,metric,1,3,4)", series.ToString());
         }
+
+        [TestMethod]
+        public void TemplatePositional()
+        {
+            var series = _series.Template("worker1");
+            Assert.AreEqual("template(metric,\"worker1\")", series.ToString());
+        }
+
+        [TestMethod]
+        public void TemplateNamed()
+        {
+            var series = _series.Template(new Tuple<string, string>("hostname", "worker1"));
+            Assert.AreEqual("template(metric,hostname=\"worker1\")", series.ToString());
+        }
     }
 }

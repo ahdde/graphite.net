@@ -8,8 +8,16 @@ using ahd.Graphite.Base;
 
 namespace ahd.Graphite
 {
+    /// <summary>
+    /// Client to send and retrieve data to and from graphite
+    /// </summary>
     public class GraphiteClient
     {
+        /// <summary>
+        /// Creates a client with the specified host and formatter
+        /// </summary>
+        /// <param name="host">Graphite hostname</param>
+        /// <param name="formatter">formatter for sending data to graphite</param>
         public GraphiteClient(string host, IGraphiteFormatter formatter) : this(host)
         {
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
@@ -17,6 +25,10 @@ namespace ahd.Graphite
             Formatter = formatter;
         }
         
+        /// <summary>
+        /// Creates a client with the specified host
+        /// </summary>
+        /// <param name="host">Graphite hostname</param>
         public GraphiteClient(string host):this()
         {
             if (String.IsNullOrEmpty(host)) throw new ArgumentNullException(nameof(host));
@@ -24,6 +36,9 @@ namespace ahd.Graphite
             Host = host;
         }
 
+        /// <summary>
+        /// Creates a client for localhost
+        /// </summary>
         public GraphiteClient()
         {
             Host = "localhost";
@@ -33,32 +48,70 @@ namespace ahd.Graphite
             BatchSize = 500;
         }
         
+        /// <summary>
+        /// graphite hostname - default "localhost"
+        /// </summary>
         public string Host { get; }
 
+        /// <summary>
+        /// Use ssl for query - default "true"
+        /// </summary>
         public bool UseSsl { get; set; }
 
+        /// <summary>
+        /// port for query - default "443"
+        /// </summary>
         public ushort HttpApiPort { get; set; }
 
+        /// <summary>
+        /// Formatter for sending data - default <see cref="PlaintextGraphiteFormatter"/>
+        /// </summary>
         public IGraphiteFormatter Formatter { get; }
 
+        /// <summary>
+        /// Maximum number of datapoints to send in a single request - default "500"
+        /// </summary>
         public int BatchSize { get; set; }
 
+        /// <summary>
+        /// Send a single datapoint
+        /// </summary>
+        /// <param name="series">metric path</param>
+        /// <param name="value">metric value</param>
+        /// <returns></returns>
         public async Task SendAsync(string series, double value)
         {
             await SendAsync(series, value, DateTime.Now);
         }
 
+        /// <summary>
+        /// Send a single datapoint
+        /// </summary>
+        /// <param name="series">metric path</param>
+        /// <param name="value">metric value</param>
+        /// <param name="timestamp">metric timestamp</param>
+        /// <returns></returns>
         public async Task SendAsync(string series, double value, DateTime timestamp)
         {
             await SendAsync(new Datapoint(series, value, timestamp));
         }
 
+        /// <summary>
+        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
+        /// </summary>
+        /// <param name="datapoints"></param>
+        /// <returns></returns>
         public async Task SendAsync(params Datapoint[] datapoints)
         {
             ICollection<Datapoint> points = datapoints;
             await SendAsync(points);
         }
 
+        /// <summary>
+        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
+        /// </summary>
+        /// <param name="datapoints"></param>
+        /// <returns></returns>
         public async Task SendAsync(ICollection<Datapoint> datapoints)
         {
             if (datapoints == null || datapoints.Count == 0) throw new ArgumentNullException(nameof(datapoints));
@@ -81,12 +134,22 @@ namespace ahd.Graphite
             }
         }
 
+        /// <summary>
+        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
+        /// </summary>
+        /// <param name="datapoints"></param>
+        /// <returns></returns>
         public void Send(params Datapoint[] datapoints)
         {
             ICollection<Datapoint> points = datapoints;
             Send(points);
         }
 
+        /// <summary>
+        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
+        /// </summary>
+        /// <param name="datapoints"></param>
+        /// <returns></returns>
         public void Send(ICollection<Datapoint> datapoints)
         {
             if (datapoints == null || datapoints.Count == 0) throw new ArgumentNullException(nameof(datapoints));
@@ -133,6 +196,10 @@ namespace ahd.Graphite
             }
         }
 
+        /// <summary>
+        /// Walks the metrics tree and returns every metric found as a sorted JSON array
+        /// </summary>
+        /// <returns>list of alle metrics</returns>
         public async Task<string[]> GetAllMetricsAsync()
         {
             using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
@@ -143,6 +210,14 @@ namespace ahd.Graphite
             }
         }
 
+        /// <summary>
+        /// Finds metrics under a given path
+        /// </summary>
+        /// <param name="query">The query to search for</param>
+        /// <param name="wildcards">Whether to add a wildcard result at the end or not</param>
+        /// <param name="from">timestamp from which to consider metrics</param>
+        /// <param name="until">timestamp until which to consider metrics</param>
+        /// <returns></returns>
         public async Task<GraphiteMetric[]> FindMetricsAsync(string query, bool wildcards = false, DateTime? from = null, DateTime? until = null)
         {
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
@@ -165,12 +240,23 @@ namespace ahd.Graphite
                 return (await response.Content.ReadAsAsync<GraphiteFindResult>()).Metrics;
             }
         }
-        
+
+        /// <summary>
+        /// Expands the given query with matching paths
+        /// </summary>
+        /// <param name="query">The metrics query</param>
+        /// <returns>list of matching metric names</returns>
         public Task<string[]> ExpandMetricsAsync(params GraphitePath[] query)
         {
             return ExpandMetricsAsync(false, query);
         }
 
+        /// <summary>
+        /// Expands the given query with matching paths
+        /// </summary>
+        /// <param name="leavesOnly">Whether to only return leaves or both branches and leaves</param>
+        /// <param name="query">The metrics query</param>
+        /// <returns>list of matching metric names</returns>
         public async Task<string[]> ExpandMetricsAsync(bool leavesOnly, params GraphitePath[] query)
         {
             if (query == null || query.Length == 0) throw new ArgumentNullException(nameof(query));
@@ -201,11 +287,29 @@ namespace ahd.Graphite
             return builder.Uri;
         }
 
+        /// <summary>
+        /// fetch metric values from graphite
+        /// </summary>
+        /// <param name="target">path identifying one metric, optionally with functions acting on those metric</param>
+        /// <param name="from">specify the relative or absolute beginning to graph</param>
+        /// <param name="until">specify the relative or absolute end to graph</param>
+        /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
+        /// <param name="maxDataPoints"></param>
+        /// <returns></returns>
         public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null)
         {
             return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints);
         }
 
+        /// <summary>
+        /// fetch metric values from graphite
+        /// </summary>
+        /// <param name="targets">path identifying one or several metrics, optionally with functions acting on those metrics</param>
+        /// <param name="from">specify the relative or absolute beginning to graph</param>
+        /// <param name="until">specify the relative or absolute end to graph</param>
+        /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
+        /// <param name="maxDataPoints"></param>
+        /// <returns></returns>
         public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null)
         {
             if (targets == null || targets.Length == 0) throw new ArgumentNullException(nameof(targets));

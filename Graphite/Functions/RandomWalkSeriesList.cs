@@ -7,16 +7,28 @@ namespace ahd.Graphite.Functions
     /// </summary>
     public class RandomWalkSeriesList : SeriesListBase
     {
+        /// <summary>
+        /// Creates a random walk series starting at 0
+        /// </summary>
+        /// <param name="name">alias to use</param>
+        /// <param name="step">step parameter</param>
         public RandomWalkSeriesList(string name, uint step=60)
         {
             Name = name;
             Step = step;
         }
 
+        /// <summary>
+        /// alias name of the metric
+        /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        /// step parameter
+        /// </summary>
         public uint Step { get; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             if (Step == 60)

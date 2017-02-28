@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace ahd.Graphite.Base
 {
+    /// <summary>
+    /// graphite target
+    /// </summary>
     public abstract class SeriesListBase
     {
         /// <inheritdoc />
@@ -100,6 +104,13 @@ namespace ahd.Graphite.Base
             return Ternary("aliasSub", DoubleQuote(search), DoubleQuote(replace));
         }
 
+        /// <summary>
+        /// Takes a seriesList and applies some complicated function (described by a string), replacing templates with unique prefixes of keys from the seriesList (the key is all nodes up to the index given as nodeNum).
+        /// </summary>
+        /// <param name="nodeNum"></param>
+        /// <param name="templateFunction"></param>
+        /// <param name="newName">If the newName paramter is provided, the name of the resulting series will be given by that parameter, with any “%” characters replaced by the unique prefix.</param>
+        /// <returns></returns>
         public SeriesListBase ApplyByNode(uint nodeNum, SeriesListFunction templateFunction, string newName = null)
         {
             return newName == null
@@ -166,6 +177,11 @@ namespace ahd.Graphite.Base
             return Unary("avg");
         }
 
+        /// <summary>
+        /// Call <see cref="Avg"/> after inserting wildcards at the given position(s).
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         public SeriesListFunction AverageSeriesWithWildcards(params int[] position)
         {
             return new SeriesListFunction("averageSeriesWithWildcards", Merge(this, position));
@@ -928,6 +944,28 @@ namespace ahd.Graphite.Base
             if (seriesListWeight == null)
                 throw new ArgumentNullException(nameof(seriesListWeight));
             return new SeriesListFunction("weightedAverage", Merge(this, Merge(seriesListWeight, nodes)));
+        }
+
+        /// <summary>
+        /// allows the metric paths to contain named variables.
+        /// Variable values can be specified or overriden in <see cref="GraphiteClient.GetMetricsDataAsync(ahd.Graphite.Base.SeriesListBase,string,string,System.Collections.Generic.IDictionary{string,string},System.Nullable{ulong})"/>
+        /// </summary>
+        /// <param name="defaultValues">default values for the template variables</param>
+        /// <returns></returns>
+        public SeriesListFunction Template(params Tuple<string, string>[] defaultValues)
+        {
+            return new SeriesListFunction("template", Merge(this, defaultValues.Select(x => $"{x.Item1}={DoubleQuote(x.Item2)}").ToArray()));
+        }
+
+        /// <summary>
+        /// allows the metric paths to contain positional variables.
+        /// Variable values can be specified or overriden in <see cref="GraphiteClient.GetMetricsDataAsync(ahd.Graphite.Base.SeriesListBase,string,string,System.Collections.Generic.IDictionary{string,string},System.Nullable{ulong})"/>
+        /// </summary>
+        /// <param name="defaultValues">default values for the template variables</param>
+        /// <returns></returns>
+        public SeriesListFunction Template(params string[] defaultValues)
+        {
+            return new SeriesListFunction("template", Merge(this, defaultValues.Select(DoubleQuote).ToArray()));  
         }
     }
 }

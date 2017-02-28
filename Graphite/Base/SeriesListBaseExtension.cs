@@ -1,5 +1,8 @@
 namespace ahd.Graphite.Base
 {
+    /// <summary>
+    /// Helper extension methods
+    /// </summary>
     public static class SeriesListBaseExtension
     {
         /// <summary>

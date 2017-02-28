@@ -7,20 +7,32 @@ using Razorvine.Pickle;
 
 namespace ahd.Graphite
 {
+    /// <summary>
+    /// formatter for sending data in python pickle format
+    /// </summary>
     public class PickleGraphiteFormatter : IGraphiteFormatter
     {
+        /// <inheritdoc/>
         public ushort Port { get; }
         
+        /// <summary>
+        /// Creates a pickle formatter with a custom destination port
+        /// </summary>
+        /// <param name="port">target port (default 2004)</param>
         public PickleGraphiteFormatter(ushort port):this()
         {
             Port = port;
         }
 
+        /// <summary>
+        /// Creates a pickle formatter with default port 2004
+        /// </summary>
         public PickleGraphiteFormatter()
         {
             Port = 2004;
         }
 
+        /// <inheritdoc/>
         public async Task WriteAsync(Stream stream, ICollection<Datapoint> datapoints)
         {
             using (var pickler = new Pickler())
@@ -40,6 +52,7 @@ namespace ahd.Graphite
             }
         }
 
+        /// <inheritdoc/>
         public void Write(Stream stream, ICollection<Datapoint> datapoints)
         {
             using (var pickler = new Pickler())
