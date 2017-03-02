@@ -1,3 +1,5 @@
+![Build Status](https://ahdde.visualstudio.com/_apis/public/build/definitions/c46377a0-ba14-4eb7-9145-b950c0883320/2/badge)
+
 ## Synopsis
 
 Client library for submitting data to and querying from [graphite](https://github.com/graphite-project/graphite-web)
