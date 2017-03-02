@@ -7,10 +7,10 @@
     <authors>ahd GmbH &amp; Co. KG</authors>
     <owners>ahd GmbH &amp; Co. KG</owners>
     <projectUrl>https://github.com/ahdde/graphite.net</projectUrl>
+    <licenseUrl>https://raw.github.com/ahdde/graphite.net/master/LICENSE.md</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>client implementation for sending and retrieving values from and to any graphite server.</description>
-    <releaseNotes>initial version</releaseNotes>
-    <copyright>Copyright 2016</copyright>
+    <copyright>Copyright 2017</copyright>
     <tags>graphite pickle metric tsdb</tags>
     <dependencies>
       <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3"/>
