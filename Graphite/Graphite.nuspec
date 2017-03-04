@@ -8,6 +8,7 @@
     <owners>ahd GmbH &amp; Co. KG</owners>
     <projectUrl>https://github.com/ahdde/graphite.net</projectUrl>
     <licenseUrl>https://raw.github.com/ahdde/graphite.net/master/LICENSE.md</licenseUrl>
+    <iconUrl>https://raw.github.com/ahdde/graphite.net/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>client implementation for sending and retrieving values from and to any graphite server.</description>
     <copyright>Copyright 2017</copyright>
