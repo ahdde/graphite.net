@@ -8,7 +8,7 @@ namespace ahd.Graphite.Base
     public class SeriesListFunction : SeriesListBase
     {
         /// <summary>
-        /// create a functioncall
+        /// create a function call
         /// </summary>
         /// <param name="function">name of the function</param>
         /// <param name="parameter">function arguments</param>

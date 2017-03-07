@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
+using ahd.Graphite.Test.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Razorvine.Pickle;
@@ -54,11 +55,11 @@ namespace ahd.Graphite.Test
         [TestMethod]
         public void CanCreateClientWithParams()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems");
-            Assert.AreEqual("graphite.mpdev.systems", client.Host);
+            var client = new GraphiteClient(Settings.Default.GraphiteHost);
+            Assert.AreEqual(Settings.Default.GraphiteHost, client.Host);
 
-            client = new GraphiteClient("graphite.mpdev.systems", new TestGraphiteFormatter(2004));
-            Assert.AreEqual("graphite.mpdev.systems", client.Host);
+            client = new GraphiteClient(Settings.Default.GraphiteHost, new TestGraphiteFormatter(2004));
+            Assert.AreEqual(Settings.Default.GraphiteHost, client.Host);
             Assert.AreEqual(2004, client.Formatter.Port);
             Assert.IsInstanceOfType(client.Formatter, typeof(TestGraphiteFormatter));
         }
@@ -100,7 +101,7 @@ namespace ahd.Graphite.Test
         [TestCategory("Integration")]
         public async Task SendMetric()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems");
+            var client = new GraphiteClient(Settings.Default.GraphiteHost);
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             Console.WriteLine("done");
         }
@@ -109,7 +110,7 @@ namespace ahd.Graphite.Test
         [TestCategory("Integration")]
         public async Task SendPickledMetric()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems", new PickleGraphiteFormatter());
+            var client = new GraphiteClient(Settings.Default.GraphiteHost, new PickleGraphiteFormatter());
             await client.SendAsync("usage.unittest.pickled.cpu.count", Environment.ProcessorCount);
         }
 
@@ -130,7 +131,7 @@ namespace ahd.Graphite.Test
         [TestCategory("Integration")]
         public async Task CanGetAllMetrics()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems");
+            var client = new GraphiteClient(Settings.Default.GraphiteHost);
             var metrics = await client.GetAllMetricsAsync();
             Assert.IsNotNull(metrics);
             Assert.AreNotEqual(0, metrics.Length);
@@ -141,7 +142,7 @@ namespace ahd.Graphite.Test
         [TestCategory("Integration")]
         public async Task CanFindMetric()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems");
+            var client = new GraphiteClient(Settings.Default.GraphiteHost);
             var metrics = await client.FindMetricsAsync("usage.unittest.*");
             Assert.IsNotNull(metrics);
             Assert.AreNotEqual(0, metrics.Length);
@@ -152,7 +153,7 @@ namespace ahd.Graphite.Test
         [TestCategory("Integration")]
         public async Task CanExpandMetrics()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems");
+            var client = new GraphiteClient(Settings.Default.GraphiteHost);
             var path1 = new GraphitePath("usage").Path("unittest").Path("iaas").WildcardPath().WildcardPath().WildcardPath();
             var path2 = new GraphitePath("usage").Path("unittest").Path("license").WildcardPath();
             var metrics = await client.ExpandMetricsAsync(path1, path2);
@@ -192,7 +193,7 @@ namespace ahd.Graphite.Test
         [TestCategory("Integration")]
         public async Task CanGetMetricValues()
         {
-            var client = new GraphiteClient("graphite.mpdev.systems");
+            var client = new GraphiteClient(Settings.Default.GraphiteHost);
             var metric = new GraphitePath("usage").Path("unittest").Path("iaas").WildcardPath().Path("cpu").Path("max");
             var data = await client.GetMetricsDataAsync(metric);
             Assert.IsNotNull(data);

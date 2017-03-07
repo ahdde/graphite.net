@@ -3,7 +3,7 @@ using ahd.Graphite.Base;
 namespace ahd.Graphite.Functions
 {
     /// <summary>
-    /// Just returns the timestamp for each X value. T
+    /// Just returns the timestamp for each X value.
     /// </summary>
     public class TimeSeriesList : SeriesListBase
     {

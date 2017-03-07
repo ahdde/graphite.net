@@ -23,12 +23,12 @@ namespace ahd.Graphite
         }
 
         /// <summary>
-        /// wether the node is a leaf node
+        /// whether the node is a leaf node
         /// </summary>
         public bool Leaf { get; }
 
         /// <summary>
-        /// wether the node is expandable
+        /// whether the node is expandable
         /// </summary>
         public bool Expandable { get; }
 

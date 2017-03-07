@@ -14,7 +14,7 @@ namespace ahd.Graphite.Base
         /// creates a new target
         /// to create a nested target or wildcard target use the corresponding functions <see cref="Range"/>, <see cref="Wildcard"/>, <see cref="Chars"/> and <see cref="Value"/>
         /// </summary>
-        /// <param name="name">name of the target- cannot contain '[', ']', '*', '.'</param>
+        /// <param name="name">name of the target- cannot contain '[', ']', '*', '.' (<see cref="ReservedChars"/>)/></param>
         public GraphitePath(string name):this(name, true)
         {
         }
@@ -29,7 +29,7 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// accepts a complete target (including wildcards and functions) and wraps it in a <see cref="GraphitePath"/>
         /// </summary>
-        /// <param name="path">target name - the target is neither parsed nor vaidated</param>
+        /// <param name="path">target name - the target is neither parsed nor validated</param>
         /// <returns><see cref="GraphitePath"/> wrapper for the supplied target</returns>
         public static GraphitePath Parse(string path)
         {

@@ -9,7 +9,7 @@ using ahd.Graphite.Base;
 namespace ahd.Graphite
 {
     /// <summary>
-    /// Client to send and retrieve data to and from graphite
+    /// Client for submitting data to and querying from graphite
     /// </summary>
     public class GraphiteClient
     {
@@ -59,7 +59,8 @@ namespace ahd.Graphite
         public bool UseSsl { get; set; }
 
         /// <summary>
-        /// port for query - default "443"
+        /// port for query - default "443" 
+        /// For data transmissions, the value specified in the <see cref="Formatter"/>'s <see cref="IGraphiteFormatter.Port"/> is used.
         /// </summary>
         public ushort HttpApiPort { get; set; }
 
@@ -199,7 +200,7 @@ namespace ahd.Graphite
         /// <summary>
         /// Walks the metrics tree and returns every metric found as a sorted JSON array
         /// </summary>
-        /// <returns>list of alle metrics</returns>
+        /// <returns>list of all metrics</returns>
         public async Task<string[]> GetAllMetricsAsync()
         {
             using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})

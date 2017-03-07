@@ -109,7 +109,7 @@ namespace ahd.Graphite.Base
         /// </summary>
         /// <param name="nodeNum"></param>
         /// <param name="templateFunction"></param>
-        /// <param name="newName">If the newName paramter is provided, the name of the resulting series will be given by that parameter, with any “%” characters replaced by the unique prefix.</param>
+        /// <param name="newName">If the newName parameter is provided, the name of the resulting series will be given by that parameter, with any “%” characters replaced by the unique prefix.</param>
         /// <returns></returns>
         public SeriesListBase ApplyByNode(uint nodeNum, SeriesListFunction templateFunction, string newName = null)
         {
@@ -199,7 +199,7 @@ namespace ahd.Graphite.Base
         /// Takes one metric or a wildcard seriesList and a consolidation function name.
         /// Valid function names are ‘sum’, ‘average’, ‘min’, and ‘max’.
         /// When a graph is drawn where width of the graph size in pixels is smaller than the number of datapoints to be graphed, 
-        /// Graphite consolidates the values to to prevent line overlap.The consolidateBy() function changes the consolidation 
+        /// Graphite consolidates the values to to prevent line overlap. The consolidateBy() function changes the consolidation 
         /// function from the default of ‘average’ to one of ‘sum’, ‘max’, or ‘min’. This is especially useful in sales graphs, 
         /// where fractional values make no sense and a ‘sum’ of consolidated values is appropriate.
         /// </summary>
@@ -243,7 +243,7 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// This is the opposite of the integral function. This is useful for taking a running total metric and calculating the delta between subsequent data points.<para/>
-        /// This function does not normalize for periods of time, as a true derivative would.Instead see the perSecond() function to calculate a rate of change over time.
+        /// This function does not normalize for periods of time, as a true derivative would. Instead, see the perSecond() function to calculate a rate of change over time.
         /// </summary>
         /// <returns></returns>
         public SeriesListFunction Derivative()
@@ -350,7 +350,7 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Estimate hit counts from a list of time series.<para/>
-        /// This function assumes the values in each time series represent hits per second.It calculates hits per some larger interval such as per day or per hour.This function is like summarize(), except that it compensates automatically for different time scales(so that a similar graph results from using either fine-grained or coarse-grained records) and handles rarely-occurring events gracefully.
+        /// This function assumes the values in each time series represent hits per second. It calculates hits per some larger interval such as per day or per hour. This function is like summarize(), except that it compensates automatically for different time scales (so that a similar graph results from using either fine-grained or coarse-grained records) and handles rarely-occurring events gracefully.
         /// </summary>
         public SeriesListFunction Hitcount(string intervalString, bool alignToInterval=false)
         {
@@ -399,7 +399,7 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// This will do the same as integral() funcion, except resetting the total to 0 at the given time in the parameter “from” Useful for finding totals per hour/day/week/..
+        /// This will do the same as integral() function, except resetting the total to 0 at the given time in the parameter “from”. Useful for finding totals per hour/day/week/..
         /// </summary>
         public SeriesListFunction IntegralByInterval(string intervalUnit)
         {
@@ -708,7 +708,7 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// Removes lines who do not have an value lying in the x-percentile of all the values at a moment
+        /// Removes lines that do not have a value lying in the x-percentile of all the values at a moment
         /// </summary>
         public SeriesListFunction RemoveBetweenPercentile(int percentile)
         {
@@ -741,7 +741,7 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// Smarter experimental version of summarize.
+        /// Smarter experimental version of <see cref="Summarize"/>.
         /// </summary>
         public SeriesListFunction SmartSummarize(string interval, Func<SeriesListBase, Func<SeriesListFunction>> callback)
         {
@@ -751,7 +751,7 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList.<para/>
-        /// Sorts the list of metrics by the maximum value across the time period specified.Useful with the &amp;areaMode= all parameter, to keep the lowest value lines visible.
+        /// Sorts the list of metrics by the maximum value across the time period specified. Useful with the &amp;areaMode= all parameter, to keep the lowest value lines visible.
         /// </summary>
         public SeriesListFunction SortByMaxima()
         {
@@ -770,7 +770,7 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Takes one metric or a wildcard seriesList. Sorts the list of metrics by the metric name using either alphabetical order or natural sorting. 
         /// </summary>
-        /// <param name="natural">Natural sorting allows names containing numbers to be sorted more naturally, e.g: - Alphabetical sorting: server1, server11, server12, server2 - Natural sorting: server1, server2, server11, server12</param>
+        /// <param name="natural">Natural sorting allows names containing numbers to be sorted more naturally, e. g.: - Alphabetical sorting: server1, server11, server12, server2 - Natural sorting: server1, server2, server11, server12</param>
         public SeriesListFunction SortByName(bool natural = false)
         {
             if (natural)
@@ -788,7 +788,7 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by an integer N.<para/>
-        /// Draw the Standard Deviation of all metrics passed for the past N datapoints. If the ratio of null points in the window is greater than windowTolerance, skip the calculation. The default for windowTolerance is 0.1 (up to 10% of points in the window can be missing). Note that if this is set to 0.0, it will cause large gaps in the output anywhere a single point is missing.
+        /// Draw the Standard Deviation of all metrics passed for the past N datapoints. If the ratio of null points in the window is greater than windowTolerance, skip the calculation. The default for windowTolerance is 0.1 (up to 10 % of points in the window can be missing). Note that if this is set to 0.0, it will cause large gaps in the output anywhere a single point is missing.
         /// </summary>
         public SeriesListFunction Stdev(int point, double windowTolerance=0.1)
         {
@@ -858,11 +858,11 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Summarize the data into interval buckets of a certain size.<para/>
-        /// By default, the contents of each interval bucket are summed together.This is useful for counters where each increment represents a discrete event and retrieving a “per X” value requires summing all the events in that interval.<para/>
+        /// By default, the contents of each interval bucket are summed together. This is useful for counters where each increment represents a discrete event and retrieving a “per X” value requires summing all the events in that interval.<para/>
         /// Specifying ‘avg’ instead will return the mean for each bucket, which can be more useful when the value is a gauge that represents a certain value in time.<para/>
         /// ‘max’, ‘min’ or ‘last’ can also be specified.<para/>
-        /// By default, buckets are calculated by rounding to the nearest interval.This works well for intervals smaller than a day.For example, 22:32 will end up in the bucket 22:00-23:00 when the interval= 1hour.<para/>
-        /// Passing alignToFrom = true will instead create buckets starting at the from time.In this case, the bucket for 22:32 depends on the from time.If from = 6:30 then the 1hour bucket for 22:32 is 22:30-23:30.
+        /// By default, buckets are calculated by rounding to the nearest interval. This works well for intervals smaller than a day. For example, 22:32 will end up in the bucket 22:00-23:00 when the interval= 1hour.<para/>
+        /// Passing alignToFrom = true will instead create buckets starting at the from time. In this case, the bucket for 22:32 depends on the from time. If from = 6:30 then the 1hour bucket for 22:32 is 22:30-23:30.
         /// </summary>
         public SeriesListFunction Summarize(string interval, SummarizeFunction func, bool alignToFrom=false)
         {
@@ -873,10 +873,10 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList, followed by a quoted string with the length of time (See from / until in the render_api_ for examples of time formats).<para/>
-        /// Draws the selected metrics shifted in time.If no sign is given, a minus sign( - ) is implied which will shift the metric back in time.If a plus sign( + ) is given, the metric will be shifted forward in time.
-        /// Will reset the end date range automatically to the end of the base stat unless resetEnd is False.Example case is when you timeshift to last week and have the graph date range set to include a time in the future, will limit this timeshift to pretend ending at the current time. If resetEnd is False, will instead draw full range including future time.
-        /// Because time is shifted by a fixed number of seconds, comparing a time period with DST to a time period without DST, and vice - versa, will result in an apparent misalignment.For example, 8am might be overlaid with 7am.To compensate for this, use the alignDST option.
-        /// Useful for comparing a metric against itself at a past periods or correcting data stored at an offset.
+        /// Draws the selected metrics shifted in time. If no sign is given, a minus sign( - ) is implied which will shift the metric back in time. If a plus sign( + ) is given, the metric will be shifted forward in time.
+        /// Will reset the end date range automatically to the end of the base stat unless resetEnd is False. Example case is when you timeshift to last week and have the graph date range set to include a time in the future, will limit this timeshift to pretend ending at the current time. If resetEnd is False, will instead draw full range including future time.
+        /// Because time is shifted by a fixed number of seconds, comparing a time period with DST to a time period without DST, and vice - versa, will result in an apparent misalignment. For example, 8am might be overlaid with 7am. To compensate for this, use the alignDST option.
+        /// Useful for comparing a metric against itself at past periods or correcting data stored at an offset.
         /// </summary>
         public SeriesListFunction TimeShift(string timeShift, bool resetEnd=true, bool alignDst=false)
         {
@@ -901,7 +901,7 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList, followed by a quoted string with the length of time (See from / until in the render_api_ for examples of time formats). Also takes a start multiplier and end multiplier for the length of time<para/>
-        /// create a seriesList which is composed the original metric series stacked with time shifts starting time shifts from the start multiplier through the end multiplier
+        /// create a seriesList which is composed of the original metric series stacked with time shifts starting time shifts from the start multiplier through the end multiplier
         /// Useful for looking at history, or feeding into averageSeries or stddevSeries.
         /// </summary>
         public SeriesListFunction TimeStack(string timeShiftUnit, int timeShiftStart, int timeShiftEnd)
@@ -924,8 +924,8 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// Compares the maximum of each series against the given value. If the series maximum is greater than value, the regular expression search and replace is applied against the series name to plot a related metric<para/>
-        /// e.g.given useSeriesAbove(ganglia.metric1.reqs,10,’reqs’,’time’), the response time metric will be plotted only when the maximum value of the corresponding request/s metric is > 10
+        /// Compares the maximum of each series against the given value. If the series maximum is greater than <paramref name="value"/>, the regular expression search and replace is applied against the series name to plot a related metric<para/>
+        /// e. g. given useSeriesAbove(ganglia.metric1.reqs,10,’reqs’,’time’), the response time metric will be plotted only when the maximum value of the corresponding request/s metric is > 10
         /// </summary>
         /// <param name="value"></param>
         /// <param name="search"></param>

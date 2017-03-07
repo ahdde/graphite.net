@@ -24,7 +24,7 @@ namespace ahd.Graphite
         public string Target { get; }
 
         /// <summary>
-        /// List of Timestamped values as returned from graphite
+        /// List of timestamped values as returned from graphite
         /// </summary>
         public MetricDatapoint[] Datapoints { get; }
     }
