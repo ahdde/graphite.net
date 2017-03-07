@@ -49,7 +49,7 @@ Install via [nuget](https://www.nuget.org/packages/ahd.Graphite) (coming soon).
 
 ## Known Issues
 
-Please be aware that this library might include functions which are not yet stable or miss functions from the latest stable release. To work around unsupported features you can always call .ToString() and used the inappropriately named function `GraphitePath.Parse()`.
+Please be aware that this library might include functions which are not yet stable or miss functions from the latest stable release. To work around unsupported features you can always call .ToString() and use the inappropriately named function `GraphitePath.Parse()`.
 
 ## Contributing
 
