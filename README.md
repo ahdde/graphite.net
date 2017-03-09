@@ -45,7 +45,7 @@ This client also supports sending batch data via the python pickle protocol (in 
 
 ## Installation
 
-Install via [nuget](https://www.nuget.org/packages/ahd.Graphite) (coming soon).
+Install via [nuget](https://www.nuget.org/packages/ahd.Graphite).
 
 ## Known Issues
 
