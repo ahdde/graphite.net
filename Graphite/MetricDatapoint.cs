@@ -37,8 +37,15 @@ namespace ahd.Graphite
         [JsonConstructor]
         public MetricDatapoint(IList<object> json)
         {
-            Value = (double?)json[0];
+            Value = ConvertValue(json[0]);
             UnixTimestamp = (long) json[1];
+        }
+
+        private double? ConvertValue(object value)
+        {
+            if (value == null) return null;
+            if (value is long) return (long)value;
+            return (double?) value;
         }
 
         /// <summary>

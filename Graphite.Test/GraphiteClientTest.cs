@@ -178,7 +178,7 @@ namespace ahd.Graphite.Test
         [TestMethod]
         public void CanDeserializeMetricsData()
         {
-            var json = "{\"target\": \"usage.unittest.cpu.count\", \"datapoints\": [[3.5, 1474716420], [null, 1474716480], [null, 1474716540], [null, 1474716600], [7.0, 1474716660], [null, 1474716720], [null, 1474716780]]}";
+            var json = "{\"target\": \"usage.unittest.cpu.count\", \"datapoints\": [[3.5, 1474716420], [null, 1474716480], [null, 1474716540], [0, 1474716600], [7.0, 1474716660], [null, 1474716720], [null, 1474716780]]}";
             var data = JsonConvert.DeserializeObject<GraphiteMetricData>(json);
             Assert.AreEqual("usage.unittest.cpu.count", data.Target);
             Assert.IsNotNull(data.Datapoints);
