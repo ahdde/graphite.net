@@ -502,6 +502,14 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
+        /// Takes one metric or a wildcard seriesList. For each datapoint from each metric passed in, pick the maximum value and graph it.
+        /// </summary>
+        public SeriesListFunction MaxSeries(params SeriesListBase[] series)
+        {
+            return new SeriesListFunction("maxSeries", Merge(this, series));
+        }
+
+        /// <summary>
         /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a maximum value above n.
         /// </summary>
         public SeriesListFunction MaximumAbove(int value)
@@ -523,6 +531,14 @@ namespace ahd.Graphite.Base
         public SeriesListFunction MinSeries()
         {
             return Unary("minSeries");
+        }
+
+        /// <summary>
+        /// Takes one metric or a wildcard seriesList. For each datapoint from each metric passed in, pick the minimum value and graph it.
+        /// </summary>
+        public SeriesListFunction MinSeries(params SeriesListBase[] series)
+        {
+            return new SeriesListFunction("minSeries", Merge(this, series));
         }
 
         /// <summary>

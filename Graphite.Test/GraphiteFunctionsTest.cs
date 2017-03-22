@@ -363,6 +363,13 @@ namespace ahd.Graphite.Test
         {
             var series = _series.MaxSeries();
             Assert.AreEqual("maxSeries(metric)", series.ToString());
+
+            var sumSeries = _series.MaxSeries(new GraphitePath("test1"), new GraphitePath("test2"));
+            Assert.AreEqual("maxSeries(metric,test1,test2)", sumSeries.ToString());
+
+            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
+            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            Assert.AreEqual("maxSeries(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] { serie1, serie2 }.MaxSeries().ToString());
         }
 
         [TestMethod]
@@ -384,6 +391,13 @@ namespace ahd.Graphite.Test
         {
             var series = _series.MinSeries();
             Assert.AreEqual("minSeries(metric)", series.ToString());
+
+            var sumSeries = _series.MinSeries(new GraphitePath("test1"), new GraphitePath("test2"));
+            Assert.AreEqual("minSeries(metric,test1,test2)", sumSeries.ToString());
+
+            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
+            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            Assert.AreEqual("minSeries(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] { serie1, serie2 }.MinSeries().ToString());
         }
 
         [TestMethod]

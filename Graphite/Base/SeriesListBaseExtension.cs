@@ -13,5 +13,21 @@ namespace ahd.Graphite.Base
         {
             return new SeriesListFunction("sum", series);
         }
+
+        /// <summary>
+        /// Takes one metric or a wildcard seriesList. For each datapoint from each metric passed in, pick the minimum value and graph it.
+        /// </summary>
+        public static SeriesListFunction MinSeries(this SeriesListBase[] series)
+        {
+            return new SeriesListFunction("minSeries", series);
+        }
+
+        /// <summary>
+        /// Takes one metric or a wildcard seriesList. For each datapoint from each metric passed in, pick the maximum value and graph it.
+        /// </summary>
+        public static SeriesListFunction MaxSeries(this SeriesListBase[] series)
+        {
+            return new SeriesListFunction("maxSeries", series);
+        }
     }
 }
