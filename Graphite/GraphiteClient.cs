@@ -356,7 +356,7 @@ namespace ahd.Graphite
                         sb.Append("&");
                     sb.Append(WebUtility.UrlEncode(value.Key)).Append("=").Append(WebUtility.UrlEncode(value.Value));
                 }
-                var body = new StringContent(sb.ToString());
+                var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
 
                 var response = await client.PostAsync("/render",body);
                 response.EnsureSuccessStatusCode();
