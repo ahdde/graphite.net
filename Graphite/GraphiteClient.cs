@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
 
@@ -346,7 +347,17 @@ namespace ahd.Graphite
                 {
                     values.Add(new KeyValuePair<string, string>("maxDataPoints", maxDataPoints.Value.ToString()));
                 }
-                var body = new FormUrlEncodedContent(values);
+
+                //workaround for size limit in FormUrlEncodedContent
+                var sb = new StringBuilder();
+                foreach (var value in values)
+                {
+                    if (sb.Length > 0)
+                        sb.Append("&");
+                    sb.Append(WebUtility.UrlEncode(value.Key)).Append("=").Append(WebUtility.UrlEncode(value.Value));
+                }
+                var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
+
                 var response = await client.PostAsync("/render",body);
                 response.EnsureSuccessStatusCode();
 

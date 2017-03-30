@@ -204,5 +204,36 @@ namespace ahd.Graphite.Test
             Assert.IsTrue(series.Datapoints.Any(x=>x.Value.HasValue));
             Assert.IsTrue(series.Datapoints.All(x=>x.Timestamp < DateTime.Now));
         }
+
+        [TestMethod]
+        public async Task CanQueryLongFormulas()
+        {
+            var client = new GraphiteClient(Settings.Default.GraphiteHost){UseSsl = false};
+            var metrics = new SeriesListBase[768];
+            for (int i = 0; i < metrics.Length; i++)
+            {
+                metrics[i] = new GraphitePath("prefix").Path("path")
+                    .Path(Guid.NewGuid().ToString().Replace("-", String.Empty))
+                    .Path("category")
+                    .Path(Guid.NewGuid().ToString().Replace("-", String.Empty))
+                    .Path("value")
+                    .Alias(i.ToString());
+            }
+            var metric = metrics.Sum();
+            if (metric.ToString().Length < UInt16.MaxValue)
+                Assert.Inconclusive("request too short to fail");
+            try
+            {
+                await client.GetMetricsDataAsync(metric);
+            }
+            catch (UriFormatException)
+            {
+                throw;
+            }
+            catch
+            {
+                // ignored host may be not reachable
+            }
+        }
     }
 }
