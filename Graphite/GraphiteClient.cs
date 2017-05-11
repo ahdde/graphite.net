@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
+using ahd.Graphite.Exceptions;
 
 namespace ahd.Graphite
 {
@@ -207,7 +208,7 @@ namespace ahd.Graphite
             using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
             {
                 var response = await client.GetAsync("/metrics/index.json");
-                response.EnsureSuccessStatusCode();
+                await response.EnsureSuccessStatusCodeAsync();
                 return await response.Content.ReadAsAsync<string[]>();
             }
         }
@@ -238,7 +239,7 @@ namespace ahd.Graphite
                     query, wildcards ? 1 : 0, fromUnix, untilUnix);
 
                 var response = await client.GetAsync(uri);
-                response.EnsureSuccessStatusCode();
+                await response.EnsureSuccessStatusCodeAsync();
                 return (await response.Content.ReadAsAsync<GraphiteFindResult>()).Metrics;
             }
         }
@@ -276,7 +277,7 @@ namespace ahd.Graphite
 
                 var body = new FormUrlEncodedContent(values);
                 var response = await client.PostAsync("/metrics/expand", body);
-                response.EnsureSuccessStatusCode();
+                await response.EnsureSuccessStatusCodeAsync();
                 return (await response.Content.ReadAsAsync<GraphiteExpandResult>()).Results;
             }
         }
@@ -359,7 +360,7 @@ namespace ahd.Graphite
                 var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
 
                 var response = await client.PostAsync("/render",body);
-                response.EnsureSuccessStatusCode();
+                await response.EnsureSuccessStatusCodeAsync();
 
                 return await response.Content.ReadAsAsync<GraphiteMetricData[]>();
             }

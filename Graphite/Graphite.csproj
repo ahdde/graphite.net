@@ -76,6 +76,8 @@
     <Compile Include="Base\SummarizeFunction.cs" />
     <Compile Include="Datapoint.cs" />
     <Compile Include="Functions\IdentitySeriesList.cs" />
+    <Compile Include="Exceptions\HttpRequestException.cs" />
+    <Compile Include="Exceptions\HttpResponseMessageExtension.cs" />
     <Compile Include="Path\CharsGraphitePath.cs" />
     <Compile Include="Path\ModifiedGraphitePath.cs" />
     <Compile Include="Base\SeriesListBase.cs" />
