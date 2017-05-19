@@ -15,7 +15,7 @@ namespace ahd.Graphite.Path
             return $"{Previous}{{{Name}}}";
         }
 
-        public override GraphitePath Value(params string[] value)
+        public override GraphitePath Values(params string[] value)
         {
             return new ValueGraphitePath(String.Join(",", new[] { Name }.Concat(value)), Previous);
         }
