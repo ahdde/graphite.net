@@ -3,8 +3,14 @@ using System.Threading.Tasks;
 
 namespace ahd.Graphite.Exceptions
 {
+    /// <summary>
+    /// Extensions for <see cref="HttpResponseMessage"/>
+    /// </summary>
     public static class HttpResponseMessageExtension
     {
+        /// <summary>
+        /// checks the statuscode and throws a <see cref="HttpRequestException"/> with the full response content
+        /// </summary>
         public static async Task EnsureSuccessStatusCodeAsync(this HttpResponseMessage response)
         {
             if (response.IsSuccessStatusCode)
