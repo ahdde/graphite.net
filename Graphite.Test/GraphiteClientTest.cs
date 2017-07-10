@@ -154,8 +154,8 @@ namespace ahd.Graphite.Test
         public async Task CanExpandMetrics()
         {
             var client = new GraphiteClient(Settings.Default.GraphiteHost);
-            var path1 = new GraphitePath("usage").Path("unittest").Path("iaas").WildcardPath().WildcardPath().WildcardPath();
-            var path2 = new GraphitePath("usage").Path("unittest").Path("license").WildcardPath();
+            var path1 = new GraphitePath("usage").Dot("unittest").Dot("iaas").DotWildcard().DotWildcard().DotWildcard();
+            var path2 = new GraphitePath("usage").Dot("unittest").Dot("license").DotWildcard();
             var metrics = await client.ExpandMetricsAsync(path1, path2);
             Assert.IsNotNull(metrics);
             Assert.AreNotEqual(0, metrics.Length);
@@ -194,7 +194,7 @@ namespace ahd.Graphite.Test
         public async Task CanGetMetricValues()
         {
             var client = new GraphiteClient(Settings.Default.GraphiteHost);
-            var metric = new GraphitePath("usage").Path("unittest").Path("iaas").WildcardPath().Path("cpu").Path("max");
+            var metric = new GraphitePath("usage").Dot("unittest").Dot("iaas").DotWildcard().Dot("cpu").Dot("max");
             var data = await client.GetMetricsDataAsync(metric);
             Assert.IsNotNull(data);
             var series = data.FirstOrDefault();
@@ -212,11 +212,11 @@ namespace ahd.Graphite.Test
             var metrics = new SeriesListBase[768];
             for (int i = 0; i < metrics.Length; i++)
             {
-                metrics[i] = new GraphitePath("prefix").Path("path")
-                    .Path(Guid.NewGuid().ToString().Replace("-", String.Empty))
-                    .Path("category")
-                    .Path(Guid.NewGuid().ToString().Replace("-", String.Empty))
-                    .Path("value")
+                metrics[i] = new GraphitePath("prefix").Dot("path")
+                    .Dot(Guid.NewGuid().ToString().Replace("-", String.Empty))
+                    .Dot("category")
+                    .Dot(Guid.NewGuid().ToString().Replace("-", String.Empty))
+                    .Dot("value")
                     .Alias(i.ToString());
             }
             var metric = metrics.Sum();
