@@ -558,6 +558,10 @@ namespace ahd.Graphite.Test
         {
             var series = _series.Scale(10);
             Assert.AreEqual("scale(metric,10)", series.ToString());
+            series = _series.Scale(1000.1);
+            Assert.AreEqual("scale(metric,1000.1)", series.ToString());
+            series = _series.Scale(0.0005);
+            Assert.AreEqual("scale(metric,0.0005)", series.ToString());
         }
 
         [TestMethod]

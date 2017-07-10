@@ -742,9 +742,9 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by a constant, and multiplies the datapoint by the constant provided at each point.
         /// </summary>
-        public SeriesListFunction Scale(int factor)
+        public SeriesListFunction Scale(double factor)
         {
-            return Binary("scale", factor);
+            return Binary("scale", factor.ToString(CultureInfo.InvariantCulture.NumberFormat));
         }
 
         /// <summary>
