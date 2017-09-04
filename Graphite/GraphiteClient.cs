@@ -16,6 +16,19 @@ namespace ahd.Graphite
     public class GraphiteClient
     {
         /// <summary>
+        /// Creates a client with the specified host, formatter and connection address family
+        /// </summary>
+        /// <param name="host">Graphite hostname</param>
+        /// <param name="formatter">formatter for sending data to graphite</param>
+        /// <param name="family">Address family for connection establishing</param>
+        public GraphiteClient(string host, IGraphiteFormatter formatter, AddressFamily family) : this(host, formatter)
+        {
+            if (family != AddressFamily.InterNetwork && family != AddressFamily.InterNetworkV6)
+                throw new ArgumentException($"InterNetwork and InterNetworkV6 only supported. Parameter: {nameof(family)}");
+            Family = family;
+        }
+
+        /// <summary>
         /// Creates a client with the specified host and formatter
         /// </summary>
         /// <param name="host">Graphite hostname</param>
@@ -48,6 +61,7 @@ namespace ahd.Graphite
             HttpApiPort = 443;
             Formatter = new PlaintextGraphiteFormatter();
             BatchSize = 500;
+            Family = AddressFamily.InterNetwork;
         }
         
         /// <summary>
@@ -75,6 +89,11 @@ namespace ahd.Graphite
         /// Maximum number of datapoints to send in a single request - default "500"
         /// </summary>
         public int BatchSize { get; set; }
+
+        /// <summary>
+        /// AddressFamily of connection - default "InterNetwork"
+        /// </summary>
+        public AddressFamily Family { get; }
 
         /// <summary>
         /// Send a single datapoint
@@ -127,7 +146,7 @@ namespace ahd.Graphite
 
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient())
+            using (var client = new TcpClient(Family))
             {
                 await client.ConnectAsync(Host, Formatter.Port);
                 using (var stream = client.GetStream())
@@ -189,7 +208,7 @@ namespace ahd.Graphite
 
         private void SendInternal(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient())
+            using (var client = new TcpClient(Family))
             {
                 client.Connect(Host, Formatter.Port);
                 using (var stream = client.GetStream())
