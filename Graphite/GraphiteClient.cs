@@ -25,7 +25,7 @@ namespace ahd.Graphite
         {
             if (family != AddressFamily.InterNetwork && family != AddressFamily.InterNetworkV6)
                 throw new ArgumentException($"InterNetwork and InterNetworkV6 only supported. Parameter: {nameof(family)}");
-            AddressFamily = family;
+            Family = family;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ahd.Graphite
             HttpApiPort = 443;
             Formatter = new PlaintextGraphiteFormatter();
             BatchSize = 500;
-            AddressFamily = AddressFamily.InterNetwork;
+            Family = AddressFamily.InterNetwork;
         }
         
         /// <summary>
@@ -93,7 +93,7 @@ namespace ahd.Graphite
         /// <summary>
         /// AddressFamily of connection - default "InterNetwork"
         /// </summary>
-        public AddressFamily AddressFamily { get; }
+        public AddressFamily Family { get; }
 
         /// <summary>
         /// Send a single datapoint
@@ -146,7 +146,7 @@ namespace ahd.Graphite
 
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient(AddressFamily))
+            using (var client = new TcpClient(Family))
             {
                 await client.ConnectAsync(Host, Formatter.Port);
                 using (var stream = client.GetStream())
@@ -208,7 +208,7 @@ namespace ahd.Graphite
 
         private void SendInternal(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient(AddressFamily))
+            using (var client = new TcpClient(Family))
             {
                 client.Connect(Host, Formatter.Port);
                 using (var stream = client.GetStream())
