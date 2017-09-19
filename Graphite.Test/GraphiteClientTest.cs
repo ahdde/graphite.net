@@ -114,6 +114,24 @@ namespace ahd.Graphite.Test
             await client.SendAsync("usage.unittest.pickled.cpu.count", Environment.ProcessorCount);
         }
 
+        [TestMethod]
+        [TestCategory("Integration")]
+        public async Task CanSendToV6OnlyHost()
+        {
+            var client = new GraphiteClient("ipv6.test-ipv6.com", new PlaintextGraphiteFormatter(80));
+            await client.SendAsync("usage.unittest.cpu.count", 1);
+            client.Send("usage.unittest.cpu.count", 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Integration")]
+        public async Task CanSendToV4OnlyHost()
+        {
+            var client = new GraphiteClient("test-ipv6.com", new PlaintextGraphiteFormatter(80));
+            await client.SendAsync("usage.unittest.cpu.count", 1);
+            client.Send("usage.unittest.cpu.count", 1);
+        }
+
         class TestGraphiteFormatter : PlaintextGraphiteFormatter
         {
             public TestGraphiteFormatter(ushort port):base(port)

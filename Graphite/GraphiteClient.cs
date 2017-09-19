@@ -127,8 +127,9 @@ namespace ahd.Graphite
 
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient())
+            using (var client = new TcpClient(AddressFamily.InterNetworkV6))
             {
+                client.Client.DualMode = true;
                 await client.ConnectAsync(Host, Formatter.Port);
                 using (var stream = client.GetStream())
                 {
@@ -189,9 +190,8 @@ namespace ahd.Graphite
 
         private void SendInternal(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient())
+            using (var client = new TcpClient(Host, Formatter.Port))
             {
-                client.Connect(Host, Formatter.Port);
                 using (var stream = client.GetStream())
                 {
                     Formatter.Write(stream, datapoints);
