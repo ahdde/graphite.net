@@ -139,6 +139,28 @@ namespace ahd.Graphite
         }
 
         /// <summary>
+        /// Send a single datapoint
+        /// </summary>
+        /// <param name="series">metric path</param>
+        /// <param name="value">metric value</param>
+        /// <returns></returns>
+        public void Send(string series, double value)
+        {
+            Send(series, value, DateTime.Now);
+        }
+
+        /// <summary>
+        /// Send a single datapoint
+        /// </summary>
+        /// <param name="series">metric path</param>
+        /// <param name="value">metric value</param>
+        /// <param name="timestamp">metric timestamp</param>
+        /// <returns></returns>
+        public void Send(string series, double value, DateTime timestamp)
+        {
+            Send(new Datapoint(series, value, timestamp));
+        }
+        /// <summary>
         /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
         /// </summary>
         /// <param name="datapoints"></param>
