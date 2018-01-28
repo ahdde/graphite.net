@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ahd.Graphite.Base;
 using ahd.Graphite.Functions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -370,6 +371,9 @@ namespace ahd.Graphite.Test
             var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
             var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
             Assert.AreEqual("maxSeries(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] { serie1, serie2 }.MaxSeries().ToString());
+
+            IEnumerable<SeriesListBase> sources = new[] { _series };
+            Assert.AreEqual("maxSeries(metric)", sources.MaxSeries().ToString());
         }
 
         [TestMethod]
@@ -398,6 +402,9 @@ namespace ahd.Graphite.Test
             var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
             var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
             Assert.AreEqual("minSeries(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] { serie1, serie2 }.MinSeries().ToString());
+
+            IEnumerable<SeriesListBase> sources = new[] { _series };
+            Assert.AreEqual("minSeries(metric)", sources.MinSeries().ToString());
         }
 
         [TestMethod]
@@ -650,6 +657,9 @@ namespace ahd.Graphite.Test
             var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
             var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
             Assert.AreEqual("sum(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] {serie1, serie2}.Sum().ToString());
+
+            IEnumerable<SeriesListBase> sources = new[] { _series };
+            Assert.AreEqual("sum(metric)", sources.Sum().ToString());
         }
 
         [TestMethod]
