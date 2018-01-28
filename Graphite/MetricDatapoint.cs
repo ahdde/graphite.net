@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace ahd.Graphite
@@ -7,7 +6,7 @@ namespace ahd.Graphite
     /// <summary>
     /// time series datapoint
     /// </summary>
-    [JsonArray]
+    [JsonConverter(typeof(MetricDatapointConverter))]
     public class MetricDatapoint
     {
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
@@ -31,32 +30,70 @@ namespace ahd.Graphite
         public long UnixTimestamp { get; }
 
         /// <summary>
-        /// creates a datapoint from an object array as returned by graphite
-        /// </summary>
-        /// <param name="json">object array with two values - first value, then timestamp in unix epoch</param>
-        [JsonConstructor]
-        public MetricDatapoint(IList<object> json)
-        {
-            Value = ConvertValue(json[0]);
-            UnixTimestamp = (long) json[1];
-        }
-
-        private double? ConvertValue(object value)
-        {
-            if (value == null) return null;
-            if (value is long) return (long)value;
-            return (double?) value;
-        }
-
-        /// <summary>
         /// creates a datapoint with the specified value and timestamp
         /// </summary>
         /// <param name="value">value of the datapoint</param>
         /// <param name="timestamp">seconds since unix epoch</param>
-        public MetricDatapoint(double value, long timestamp)
+        public MetricDatapoint(double? value, long timestamp)
         {
             Value = value;
             UnixTimestamp = timestamp;
+        }
+
+        public class MetricDatapointConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(MetricDatapoint).IsAssignableFrom(objectType);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                if (reader.TokenType == JsonToken.StartArray)
+                {
+                    if (reader.Read())
+                    {
+                        double? value = null;
+                        switch (reader.TokenType)
+                        {
+                            case JsonToken.Float:
+                                value = (double?)reader.Value;
+                                break;
+                            case JsonToken.Integer:
+                                value = (double?)(long)reader.Value;
+                                break;
+                            case JsonToken.Null:
+                                value = null;
+                                break;
+                            default:
+                                throw new JsonSerializationException($"Unexpected Token {reader.TokenType}");
+                        }
+                        if (reader.Read() && reader.TokenType == JsonToken.Integer)
+                        {
+                            long timestamp = (long)reader.Value;
+                            if (reader.Read() && reader.TokenType == JsonToken.EndArray)
+                            {
+                                return new MetricDatapoint(value, timestamp);
+                            }
+                        }
+                    }
+                }
+                throw new JsonSerializationException("Cannot deserialize MetricDatapoint");
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                var datapoint = value as MetricDatapoint;
+                if (datapoint == null)
+                {
+                    writer.WriteNull();
+                    return;
+                }
+                writer.WriteStartArray();
+                writer.WriteValue(datapoint.Value);
+                writer.WriteValue(datapoint.UnixTimestamp);
+                writer.WriteEndArray();
+            }
         }
     }
 }
