@@ -40,7 +40,7 @@ namespace ahd.Graphite
             UnixTimestamp = timestamp;
         }
 
-        public class MetricDatapointConverter : JsonConverter
+        internal class MetricDatapointConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
             {
