@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ahd.Graphite
@@ -31,7 +32,7 @@ namespace ahd.Graphite
         public ushort Port { get; }
 
         /// <inheritdoc/>
-        public async Task WriteAsync(Stream stream, ICollection<Datapoint> datapoints)
+        public async Task WriteAsync(Stream stream, ICollection<Datapoint> datapoints, CancellationToken cancellationToken = default(CancellationToken))
         {
             using (var writer = new StreamWriter(stream) {NewLine = "\n"})
             {

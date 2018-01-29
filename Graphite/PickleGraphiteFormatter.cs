@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Razorvine.Pickle;
 
@@ -33,7 +34,7 @@ namespace ahd.Graphite
         }
 
         /// <inheritdoc/>
-        public async Task WriteAsync(Stream stream, ICollection<Datapoint> datapoints)
+        public async Task WriteAsync(Stream stream, ICollection<Datapoint> datapoints, CancellationToken cancellationToken = default(CancellationToken))
         {
             using (var pickler = new Pickler())
             {
@@ -45,10 +46,10 @@ namespace ahd.Graphite
                 var sizeBytes = BitConverter.GetBytes(size);
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(sizeBytes);
-                await stream.WriteAsync(sizeBytes, 0, sizeBytes.Length);
+                await stream.WriteAsync(sizeBytes, 0, sizeBytes.Length, cancellationToken);
 
-                await stream.WriteAsync(pickled, 0, pickled.Length);
-                await stream.FlushAsync();
+                await stream.WriteAsync(pickled, 0, pickled.Length, cancellationToken);
+                await stream.FlushAsync(cancellationToken);
             }
         }
 
