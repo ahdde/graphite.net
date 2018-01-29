@@ -20,7 +20,7 @@ namespace ahd.Graphite.Exceptions
 
             using (response.Content)
             {
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 throw new HttpRequestException(response.StatusCode, content);
             }
         }

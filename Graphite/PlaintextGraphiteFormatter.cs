@@ -39,10 +39,10 @@ namespace ahd.Graphite
                 foreach (var datapoint in datapoints)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await writer.WriteLineAsync($"{datapoint.Series} {datapoint.Value.ToString(CultureInfo.InvariantCulture)} {datapoint.UnixTimestamp}");
+                    await writer.WriteLineAsync($"{datapoint.Series} {datapoint.Value.ToString(CultureInfo.InvariantCulture)} {datapoint.UnixTimestamp}").ConfigureAwait(false);
                 }
                 cancellationToken.ThrowIfCancellationRequested();
-                await writer.FlushAsync();
+                await writer.FlushAsync().ConfigureAwait(false);
             }
         }
 

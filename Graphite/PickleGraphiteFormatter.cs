@@ -46,10 +46,10 @@ namespace ahd.Graphite
                 var sizeBytes = BitConverter.GetBytes(size);
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(sizeBytes);
-                await stream.WriteAsync(sizeBytes, 0, sizeBytes.Length, cancellationToken);
+                await stream.WriteAsync(sizeBytes, 0, sizeBytes.Length, cancellationToken).ConfigureAwait(false);
 
-                await stream.WriteAsync(pickled, 0, pickled.Length, cancellationToken);
-                await stream.FlushAsync(cancellationToken);
+                await stream.WriteAsync(pickled, 0, pickled.Length, cancellationToken).ConfigureAwait(false);
+                await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
