@@ -82,9 +82,9 @@ namespace ahd.Graphite
         /// <param name="series">metric path</param>
         /// <param name="value">metric value</param>
         /// <returns></returns>
-        public async Task SendAsync(string series, double value)
+        public Task SendAsync(string series, double value)
         {
-            await SendAsync(series, value, DateTime.Now);
+            return SendAsync(series, value, DateTime.Now);
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace ahd.Graphite
         /// <param name="value">metric value</param>
         /// <param name="timestamp">metric timestamp</param>
         /// <returns></returns>
-        public async Task SendAsync(string series, double value, DateTime timestamp)
+        public Task SendAsync(string series, double value, DateTime timestamp)
         {
-            await SendAsync(new Datapoint(series, value, timestamp));
+            return SendAsync(new Datapoint(series, value, timestamp));
         }
 
         /// <summary>
@@ -104,10 +104,10 @@ namespace ahd.Graphite
         /// </summary>
         /// <param name="datapoints"></param>
         /// <returns></returns>
-        public async Task SendAsync(params Datapoint[] datapoints)
+        public Task SendAsync(params Datapoint[] datapoints)
         {
             ICollection<Datapoint> points = datapoints;
-            await SendAsync(points);
+            return SendAsync(points);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace ahd.Graphite
             var batches = GetBatches(datapoints);
             foreach (var batch in batches)
             {
-                await SendInternalAsync(batch);
+                await SendInternalAsync(batch).ConfigureAwait(false);
             }
         }
 
@@ -130,10 +130,10 @@ namespace ahd.Graphite
             using (var client = new TcpClient(AddressFamily.InterNetworkV6))
             {
                 client.Client.DualMode = true;
-                await client.ConnectAsync(Host, Formatter.Port);
+                await client.ConnectAsync(Host, Formatter.Port).ConfigureAwait(false);
                 using (var stream = client.GetStream())
                 {
-                    await Formatter.WriteAsync(stream, datapoints);
+                    await Formatter.WriteAsync(stream, datapoints).ConfigureAwait(false);
                 }
             }
         }
@@ -229,9 +229,9 @@ namespace ahd.Graphite
         {
             using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
             {
-                var response = await client.GetAsync("/metrics/index.json");
-                await response.EnsureSuccessStatusCodeAsync();
-                return await response.Content.ReadAsAsync<string[]>();
+                var response = await client.GetAsync("/metrics/index.json").ConfigureAwait(false);
+                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+                return await response.Content.ReadAsAsync<string[]>().ConfigureAwait(false);
             }
         }
 
@@ -260,9 +260,9 @@ namespace ahd.Graphite
                 var uri = String.Format("/metrics/find?query={0}&format=completer&wildcards={1}&from={2}&until={3}",
                     query, wildcards ? 1 : 0, fromUnix, untilUnix);
 
-                var response = await client.GetAsync(uri);
-                await response.EnsureSuccessStatusCodeAsync();
-                return (await response.Content.ReadAsAsync<GraphiteFindResult>()).Metrics;
+                var response = await client.GetAsync(uri).ConfigureAwait(false);
+                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+                return (await response.Content.ReadAsAsync<GraphiteFindResult>().ConfigureAwait(false)).Metrics;
             }
         }
 
@@ -298,9 +298,9 @@ namespace ahd.Graphite
                 }
 
                 var body = new FormUrlEncodedContent(values);
-                var response = await client.PostAsync("/metrics/expand", body);
-                await response.EnsureSuccessStatusCodeAsync();
-                return (await response.Content.ReadAsAsync<GraphiteExpandResult>()).Results;
+                var response = await client.PostAsync("/metrics/expand", body).ConfigureAwait(false);
+                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+                return (await response.Content.ReadAsAsync<GraphiteExpandResult>().ConfigureAwait(false)).Results;
             }
         }
 
@@ -381,10 +381,10 @@ namespace ahd.Graphite
                 }
                 var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
 
-                var response = await client.PostAsync("/render",body);
-                await response.EnsureSuccessStatusCodeAsync();
+                var response = await client.PostAsync("/render",body).ConfigureAwait(false);
+                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
 
-                return await response.Content.ReadAsAsync<GraphiteMetricData[]>();
+                return await response.Content.ReadAsAsync<GraphiteMetricData[]>().ConfigureAwait(false);
             }
         }
     }

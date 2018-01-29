@@ -37,9 +37,9 @@ namespace ahd.Graphite
             {
                 foreach (var datapoint in datapoints)
                 {
-                    await writer.WriteLineAsync($"{datapoint.Series} {datapoint.Value.ToString(CultureInfo.InvariantCulture)} {datapoint.UnixTimestamp}");
+                    await writer.WriteLineAsync($"{datapoint.Series} {datapoint.Value.ToString(CultureInfo.InvariantCulture)} {datapoint.UnixTimestamp}").ConfigureAwait(false);
                 }
-                await writer.FlushAsync();
+                await writer.FlushAsync().ConfigureAwait(false);
             }
         }
 
