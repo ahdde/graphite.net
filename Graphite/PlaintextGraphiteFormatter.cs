@@ -38,8 +38,10 @@ namespace ahd.Graphite
             {
                 foreach (var datapoint in datapoints)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     await writer.WriteLineAsync($"{datapoint.Series} {datapoint.Value.ToString(CultureInfo.InvariantCulture)} {datapoint.UnixTimestamp}");
                 }
+                cancellationToken.ThrowIfCancellationRequested();
                 await writer.FlushAsync();
             }
         }
