@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
 using ahd.Graphite.Exceptions;
@@ -81,10 +82,11 @@ namespace ahd.Graphite
         /// </summary>
         /// <param name="series">metric path</param>
         /// <param name="value">metric value</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public Task SendAsync(string series, double value)
+        public Task SendAsync(string series, double value, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return SendAsync(series, value, DateTime.Now);
+            return SendAsync(series, value, DateTime.Now, cancellationToken);
         }
 
         /// <summary>
@@ -93,10 +95,11 @@ namespace ahd.Graphite
         /// <param name="series">metric path</param>
         /// <param name="value">metric value</param>
         /// <param name="timestamp">metric timestamp</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public Task SendAsync(string series, double value, DateTime timestamp)
+        public Task SendAsync(string series, double value, DateTime timestamp, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return SendAsync(new Datapoint(series, value, timestamp));
+            return SendAsync(new []{new Datapoint(series, value, timestamp)}, cancellationToken);
         }
 
         /// <summary>
@@ -106,34 +109,58 @@ namespace ahd.Graphite
         /// <returns></returns>
         public Task SendAsync(params Datapoint[] datapoints)
         {
-            ICollection<Datapoint> points = datapoints;
-            return SendAsync(points);
+            return SendAsync(datapoints, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
+        /// </summary>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <param name="datapoints"></param>
+        /// <returns></returns>
+        public Task SendAsync(CancellationToken cancellationToken, params Datapoint[] datapoints)
+        {
+            return SendAsync(datapoints, cancellationToken);
         }
 
         /// <summary>
         /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
         /// </summary>
         /// <param name="datapoints"></param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns></returns>
-        public async Task SendAsync(ICollection<Datapoint> datapoints)
+        public Task SendAsync(Datapoint[] datapoints, CancellationToken cancellationToken)
+        {
+            ICollection<Datapoint> points = datapoints;
+            return SendAsync(points, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
+        /// </summary>
+        /// <param name="datapoints"></param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns></returns>
+        public async Task SendAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (datapoints == null || datapoints.Count == 0) throw new ArgumentNullException(nameof(datapoints));
             var batches = GetBatches(datapoints);
             foreach (var batch in batches)
             {
-                await SendInternalAsync(batch).ConfigureAwait(false);
+                await SendInternalAsync(batch, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private async Task SendInternalAsync(ICollection<Datapoint> datapoints)
+        private async Task SendInternalAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken)
         {
             using (var client = new TcpClient(AddressFamily.InterNetworkV6))
             {
                 client.Client.DualMode = true;
                 await client.ConnectAsync(Host, Formatter.Port).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
                 using (var stream = client.GetStream())
                 {
-                    await Formatter.WriteAsync(stream, datapoints).ConfigureAwait(false);
+                    await Formatter.WriteAsync(stream, datapoints, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
