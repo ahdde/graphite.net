@@ -127,7 +127,7 @@ namespace ahd.Graphite
         /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
         /// </summary>
         /// <param name="datapoints"></param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns></returns>
         public Task SendAsync(Datapoint[] datapoints, CancellationToken cancellationToken)
         {
@@ -157,6 +157,7 @@ namespace ahd.Graphite
             {
                 client.Client.DualMode = true;
                 await client.ConnectAsync(Host, Formatter.Port).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
                 using (var stream = client.GetStream())
                 {
                     await Formatter.WriteAsync(stream, datapoints, cancellationToken).ConfigureAwait(false);
