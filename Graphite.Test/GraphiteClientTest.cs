@@ -208,6 +208,22 @@ namespace ahd.Graphite.Test
         }
 
         [TestMethod]
+        public void CanSerialize()
+        {
+            var datapoint = new MetricDatapoint(null, 987654321);
+            var json = JsonConvert.SerializeObject(datapoint);
+            Assert.AreEqual("[null,987654321]", json);
+
+            var datapoint2 = new MetricDatapoint(5, 123456789);
+            json = JsonConvert.SerializeObject(datapoint2);
+            Assert.AreEqual("[5.0,123456789]", json);
+
+            var metricData = new GraphiteMetricData("unit.test", new[] { datapoint2, datapoint });
+            json = JsonConvert.SerializeObject(metricData);
+            Assert.AreEqual("{\"target\":\"unit.test\",\"datapoints\":[[5.0,123456789],[null,987654321]]}", json);
+        }
+
+        [TestMethod]
         [TestCategory("Integration")]
         public async Task CanGetMetricValues()
         {
