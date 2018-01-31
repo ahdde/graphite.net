@@ -251,14 +251,15 @@ namespace ahd.Graphite
         /// <summary>
         /// Walks the metrics tree and returns every metric found as a sorted JSON array
         /// </summary>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>list of all metrics</returns>
-        public async Task<string[]> GetAllMetricsAsync()
+        public async Task<string[]> GetAllMetricsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
             {
-                var response = await client.GetAsync("/metrics/index.json").ConfigureAwait(false);
+                var response = await client.GetAsync("/metrics/index.json", cancellationToken).ConfigureAwait(false);
                 await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-                return await response.Content.ReadAsAsync<string[]>().ConfigureAwait(false);
+                return await response.Content.ReadAsAsync<string[]>(cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -269,8 +270,9 @@ namespace ahd.Graphite
         /// <param name="wildcards">Whether to add a wildcard result at the end or not</param>
         /// <param name="from">timestamp from which to consider metrics</param>
         /// <param name="until">timestamp until which to consider metrics</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public async Task<GraphiteMetric[]> FindMetricsAsync(string query, bool wildcards = false, DateTime? from = null, DateTime? until = null)
+        public async Task<GraphiteMetric[]> FindMetricsAsync(string query, bool wildcards = false, DateTime? from = null, DateTime? until = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
 
@@ -287,9 +289,9 @@ namespace ahd.Graphite
                 var uri = String.Format("/metrics/find?query={0}&format=completer&wildcards={1}&from={2}&until={3}",
                     query, wildcards ? 1 : 0, fromUnix, untilUnix);
 
-                var response = await client.GetAsync(uri).ConfigureAwait(false);
+                var response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
                 await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-                return (await response.Content.ReadAsAsync<GraphiteFindResult>().ConfigureAwait(false)).Metrics;
+                return (await response.Content.ReadAsAsync<GraphiteFindResult>(cancellationToken).ConfigureAwait(false)).Metrics;
             }
         }
 
@@ -300,16 +302,28 @@ namespace ahd.Graphite
         /// <returns>list of matching metric names</returns>
         public Task<string[]> ExpandMetricsAsync(params GraphitePath[] query)
         {
-            return ExpandMetricsAsync(false, query);
+            return ExpandMetricsAsync(false, CancellationToken.None, query);
+        }
+
+        /// <summary>
+        /// Expands the given query with matching paths
+        /// </summary>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <param name="query">The metrics query</param>
+        /// <returns>list of matching metric names</returns>
+        public Task<string[]> ExpandMetricsAsync(CancellationToken cancellationToken, params GraphitePath[] query)
+        {
+            return ExpandMetricsAsync(false, cancellationToken, query);
         }
 
         /// <summary>
         /// Expands the given query with matching paths
         /// </summary>
         /// <param name="leavesOnly">Whether to only return leaves or both branches and leaves</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <param name="query">The metrics query</param>
         /// <returns>list of matching metric names</returns>
-        public async Task<string[]> ExpandMetricsAsync(bool leavesOnly, params GraphitePath[] query)
+        public async Task<string[]> ExpandMetricsAsync(bool leavesOnly, CancellationToken cancellationToken, params GraphitePath[] query)
         {
             if (query == null || query.Length == 0) throw new ArgumentNullException(nameof(query));
 
@@ -325,9 +339,9 @@ namespace ahd.Graphite
                 }
 
                 var body = new FormUrlEncodedContent(values);
-                var response = await client.PostAsync("/metrics/expand", body).ConfigureAwait(false);
+                var response = await client.PostAsync("/metrics/expand", body, cancellationToken).ConfigureAwait(false);
                 await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-                return (await response.Content.ReadAsAsync<GraphiteExpandResult>().ConfigureAwait(false)).Results;
+                return (await response.Content.ReadAsAsync<GraphiteExpandResult>(cancellationToken).ConfigureAwait(false)).Results;
             }
         }
 
@@ -347,10 +361,11 @@ namespace ahd.Graphite
         /// <param name="until">specify the relative or absolute end to graph</param>
         /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
         /// <param name="maxDataPoints"></param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null)
+        public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints);
+            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints, cancellationToken);
         }
 
         /// <summary>
@@ -361,8 +376,9 @@ namespace ahd.Graphite
         /// <param name="until">specify the relative or absolute end to graph</param>
         /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
         /// <param name="maxDataPoints"></param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null)
+        public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (targets == null || targets.Length == 0) throw new ArgumentNullException(nameof(targets));
 
@@ -408,10 +424,10 @@ namespace ahd.Graphite
                 }
                 var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
 
-                var response = await client.PostAsync("/render",body).ConfigureAwait(false);
+                var response = await client.PostAsync("/render",body, cancellationToken).ConfigureAwait(false);
                 await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
 
-                return await response.Content.ReadAsAsync<GraphiteMetricData[]>().ConfigureAwait(false);
+                return await response.Content.ReadAsAsync<GraphiteMetricData[]>(cancellationToken).ConfigureAwait(false);
             }
         }
     }
