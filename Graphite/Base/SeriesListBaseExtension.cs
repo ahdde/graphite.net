@@ -55,5 +55,21 @@ namespace ahd.Graphite.Base
         {
             return series.ToArray().MaxSeries();
         }
+
+        /// <summary>
+        /// Takes an arbitrary number of seriesLists and adds them to a single seriesList. This is used to pass multiple seriesLists to a function which only takes one
+        /// </summary>
+        public static SeriesListFunction Group(this SeriesListBase[] series)
+        {
+            return new SeriesListFunction("group", series);
+        }
+
+        /// <summary>
+        /// Takes an arbitrary number of seriesLists and adds them to a single seriesList. This is used to pass multiple seriesLists to a function which only takes one
+        /// </summary>
+        public static SeriesListFunction Group(this IEnumerable<SeriesListBase> series)
+        {
+            return series.ToArray().Group();
+        }
     }
 }
