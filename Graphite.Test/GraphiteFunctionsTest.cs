@@ -195,8 +195,18 @@ namespace ahd.Graphite.Test
         [TestMethod]
         public void Group()
         {
-            var series = _series.Group(_series, _series);
-            Assert.AreEqual("group(metric,metric,metric)", series.ToString());
+            var series = _series.Group();
+            Assert.AreEqual("group(metric)", series.ToString());
+
+            var sumSeries = _series.Group(new GraphitePath("test1"), _series);
+            Assert.AreEqual("group(metric,test1,metric)", sumSeries.ToString());
+
+            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
+            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            Assert.AreEqual("group(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] {serie1, serie2}.Group().ToString());
+
+            IEnumerable<SeriesListBase> sources = new[] { _series };
+            Assert.AreEqual("group(metric)", sources.Group().ToString());
         }
 
         [TestMethod]
