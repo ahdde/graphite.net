@@ -78,6 +78,8 @@ namespace ahd.Graphite.Test
         {
             var averageAbove = _series.AverageAbove(5);
             Assert.AreEqual("averageAbove(metric,5)", averageAbove.ToString());
+            averageAbove = _series.AverageAbove(1.1);
+            Assert.AreEqual("averageAbove(metric,1.1)", averageAbove.ToString());
         }
 
         [TestMethod]
@@ -85,6 +87,8 @@ namespace ahd.Graphite.Test
         {
             var averageBelow = _series.AverageBelow(5);
             Assert.AreEqual("averageBelow(metric,5)", averageBelow.ToString());
+            averageBelow = _series.AverageBelow(1.1);
+            Assert.AreEqual("averageBelow(metric,1.1)", averageBelow.ToString());
         }
 
         [TestMethod]
@@ -391,6 +395,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.MaximumAbove(10);
             Assert.AreEqual("maximumAbove(metric,10)", series.ToString());
+            series = _series.MaximumAbove(1.1);
+            Assert.AreEqual("maximumAbove(metric,1.1)", series.ToString());
         }
 
         [TestMethod]
@@ -398,6 +404,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.MaximumBelow(10);
             Assert.AreEqual("maximumBelow(metric,10)", series.ToString());
+            series = _series.MaximumBelow(1.1);
+            Assert.AreEqual("maximumBelow(metric,1.1)", series.ToString());
         }
 
         [TestMethod]
@@ -422,6 +430,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.MinimumAbove(10);
             Assert.AreEqual("minimumAbove(metric,10)", series.ToString());
+            series = _series.MinimumAbove(1.1);
+            Assert.AreEqual("minimumAbove(metric,1.1)", series.ToString());
         }
 
         [TestMethod]
@@ -429,6 +439,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.MinimumBelow(10);
             Assert.AreEqual("minimumBelow(metric,10)", series.ToString());
+            series = _series.MinimumBelow(1.1);
+            Assert.AreEqual("minimumBelow(metric,1.1)", series.ToString());
         }
 
         [TestMethod]
@@ -540,6 +552,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.RemoveAboveValue(10);
             Assert.AreEqual("removeAboveValue(metric,10)", series.ToString());
+            series = _series.RemoveAboveValue(1.1);
+            Assert.AreEqual("removeAboveValue(metric,1.1)", series.ToString());
         }
 
         [TestMethod]
@@ -554,6 +568,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.RemoveBelowValue(10);
             Assert.AreEqual("removeBelowValue(metric,10)", series.ToString());
+            series = _series.RemoveBelowValue(1.1);
+            Assert.AreEqual("removeBelowValue(metric,1.1)", series.ToString());
         }
 
         [TestMethod]
@@ -731,6 +747,8 @@ namespace ahd.Graphite.Test
         {
             var series = _series.UseSeriesAbove(10, "reqs", "time");
             Assert.AreEqual("useSeriesAbove(metric,10,\"reqs\",\"time\")", series.ToString());
+            series = _series.UseSeriesAbove(1.1, "reqs", "time");
+            Assert.AreEqual("useSeriesAbove(metric,1.1,\"reqs\",\"time\")", series.ToString());
         }
 
         [TestMethod]

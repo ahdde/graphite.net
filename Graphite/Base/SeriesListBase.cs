@@ -148,17 +148,17 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by an integer N. Out of all metrics passed, draws only the metrics with an average value above N for the time period specified.
         /// </summary>
-        public SeriesListFunction AverageAbove(int minimum)
+        public SeriesListFunction AverageAbove(double minimum)
         {
-            return Binary("averageAbove", minimum);
+            return Binary("averageAbove", minimum.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by an integer N. Out of all metrics passed, draws only the metrics with an average value below N for the time period specified.
         /// </summary>
-        public SeriesListFunction AverageBelow(int maximum)
+        public SeriesListFunction AverageBelow(double maximum)
         {
-            return Binary("averageBelow", maximum);
+            return Binary("averageBelow", maximum.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -512,17 +512,17 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a maximum value above n.
         /// </summary>
-        public SeriesListFunction MaximumAbove(int value)
+        public SeriesListFunction MaximumAbove(double value)
         {
-            return Binary("maximumAbove", value);
+            return Binary("maximumAbove", value.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a maximum value below n.
         /// </summary>
-        public SeriesListFunction MaximumBelow(int value)
+        public SeriesListFunction MaximumBelow(double value)
         {
-            return Binary("maximumBelow", value);
+            return Binary("maximumBelow", value.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -544,17 +544,17 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a minimum value above n.
         /// </summary>
-        public SeriesListFunction MinimumAbove(int value)
+        public SeriesListFunction MinimumAbove(double value)
         {
-            return Binary("minimumAbove", value);
+            return Binary("minimumAbove", value.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
         /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a minimum value below n.
         /// </summary>
-        public SeriesListFunction MinimumBelow(int value)
+        public SeriesListFunction MinimumBelow(double value)
         {
-            return Binary("minimumBelow", value);
+            return Binary("minimumBelow", value.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -702,9 +702,9 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Removes data above the given threshold from the series or list of series provided. Values above this threshold are assigned a value of None.
         /// </summary>
-        public SeriesListFunction RemoveAboveValue(int percentile)
+        public SeriesListFunction RemoveAboveValue(double percentile)
         {
-            return Binary("removeAboveValue", percentile);
+            return Binary("removeAboveValue", percentile.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -718,9 +718,9 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Removes data below the given threshold from the series or list of series provided. Values below this threshold are assigned a value of None.
         /// </summary>
-        public SeriesListFunction RemoveBelowValue(int percentile)
+        public SeriesListFunction RemoveBelowValue(double percentile)
         {
-            return Binary("removeBelowValue", percentile);
+            return Binary("removeBelowValue", percentile.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -744,7 +744,7 @@ namespace ahd.Graphite.Base
         /// </summary>
         public SeriesListFunction Scale(double factor)
         {
-            return Binary("scale", factor.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            return Binary("scale", factor.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -947,9 +947,9 @@ namespace ahd.Graphite.Base
         /// <param name="search"></param>
         /// <param name="replace"></param>
         /// <returns></returns>
-        public SeriesListFunction UseSeriesAbove(int value, string search, string replace)
+        public SeriesListFunction UseSeriesAbove(double value, string search, string replace)
         {
-            return new SeriesListFunction("useSeriesAbove", this, value, DoubleQuote(search), DoubleQuote(replace));
+            return new SeriesListFunction("useSeriesAbove", this, value.ToString("r", CultureInfo.InvariantCulture), DoubleQuote(search), DoubleQuote(replace));
         }
 
         /// <summary>
