@@ -27,8 +27,4 @@
     <ProjectReference Include="..\Graphite\Graphite.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
 </Project>
