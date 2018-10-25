@@ -7,23 +7,24 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
-using ahd.Graphite.Test.Properties;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Razorvine.Pickle;
+using Xunit;
+using Xunit.Sdk;
 
 namespace ahd.Graphite.Test
 {
-    [TestClass]
     public class GraphiteClientTest
     {
-        [TestMethod]
+        private static readonly string GraphiteHost = "example.com";
+
+        [Fact]
         public void CanCreateClient()
         {
             var client = new GraphiteClient();
         }
 
-        [TestMethod]
+        [Fact]
         public void CanPickle()
         {
             var pickler = new Pickler();
@@ -43,28 +44,28 @@ namespace ahd.Graphite.Test
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ClientHasSaneDefaultValues()
         {
             var client = new GraphiteClient();
-            Assert.AreEqual(2003, client.Formatter.Port);
-            Assert.IsInstanceOfType(client.Formatter, typeof(PlaintextGraphiteFormatter));
-            Assert.AreEqual("localhost", client.Host);
+            Assert.Equal(2003, client.Formatter.Port);
+            Assert.IsType<PlaintextGraphiteFormatter>(client.Formatter);
+            Assert.Equal("localhost", client.Host);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanCreateClientWithParams()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost);
-            Assert.AreEqual(Settings.Default.GraphiteHost, client.Host);
+            var client = new GraphiteClient(GraphiteHost);
+            Assert.Equal(GraphiteHost, client.Host);
 
-            client = new GraphiteClient(Settings.Default.GraphiteHost, new TestGraphiteFormatter(2004));
-            Assert.AreEqual(Settings.Default.GraphiteHost, client.Host);
-            Assert.AreEqual(2004, client.Formatter.Port);
-            Assert.IsInstanceOfType(client.Formatter, typeof(TestGraphiteFormatter));
+            client = new GraphiteClient(GraphiteHost, new TestGraphiteFormatter(2004));
+            Assert.Equal(GraphiteHost, client.Host);
+            Assert.Equal(2004, client.Formatter.Port);
+            Assert.IsType<TestGraphiteFormatter>(client.Formatter);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CanSendMetric()
         {
             var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
@@ -74,16 +75,16 @@ namespace ahd.Graphite.Test
             var sendTask = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             await sendTask;
             var metric = await recvTask;
-            Assert.IsTrue(metric.Contains("usage.unittest.cpu.count"));
+            Assert.Contains("usage.unittest.cpu.count", metric);
             server.Stop();
             Console.WriteLine(metric);
         }
 
-        [TestMethod]
+        [Fact]
         public void DataPointConversion()
         {
             var data = new Datapoint("test", 0, 1451338593);
-            Assert.AreEqual(1451338593,data.UnixTimestamp);
+            Assert.Equal(1451338593,data.UnixTimestamp);
         }
 
         private async Task<string> ReceiveMetric(TcpListener server)
@@ -97,25 +98,25 @@ namespace ahd.Graphite.Test
             
         }
         
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task SendMetric()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost);
+            var client = new GraphiteClient(GraphiteHost);
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             Console.WriteLine("done");
         }
         
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task SendPickledMetric()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost, new PickleGraphiteFormatter());
+            var client = new GraphiteClient(GraphiteHost, new PickleGraphiteFormatter());
             await client.SendAsync("usage.unittest.pickled.cpu.count", Environment.ProcessorCount);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task CanSendToV6OnlyHost()
         {
             var client = new GraphiteClient("ipv6.test-ipv6.com", new PlaintextGraphiteFormatter(80));
@@ -123,8 +124,8 @@ namespace ahd.Graphite.Test
             client.Send("usage.unittest.cpu.count", 1);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task CanSendToV4OnlyHost()
         {
             var client = new GraphiteClient("test-ipv6.com", new PlaintextGraphiteFormatter(80));
@@ -145,104 +146,104 @@ namespace ahd.Graphite.Test
             }
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task CanGetAllMetrics()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost);
+            var client = new GraphiteClient(GraphiteHost);
             var metrics = await client.GetAllMetricsAsync();
-            Assert.IsNotNull(metrics);
-            Assert.AreNotEqual(0, metrics.Length);
-            Assert.IsFalse(String.IsNullOrEmpty(metrics[0]));
+            Assert.NotNull(metrics);
+            Assert.NotEmpty(metrics);
+            Assert.False(String.IsNullOrEmpty(metrics[0]));
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task CanFindMetric()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost);
+            var client = new GraphiteClient(GraphiteHost);
             var metrics = await client.FindMetricsAsync("usage.unittest.*");
-            Assert.IsNotNull(metrics);
-            Assert.AreNotEqual(0, metrics.Length);
-            Assert.IsTrue(metrics.All(x=>x.Id.StartsWith("usage.unittest.")));
+            Assert.NotNull(metrics);
+            Assert.NotEmpty(metrics);
+            Assert.True(metrics.All(x=>x.Id.StartsWith("usage.unittest.")));
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task CanExpandMetrics()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost);
+            var client = new GraphiteClient(GraphiteHost);
             var path1 = new GraphitePath("usage").Dot("unittest").Dot("iaas").DotWildcard().DotWildcard().DotWildcard();
             var path2 = new GraphitePath("usage").Dot("unittest").Dot("license").DotWildcard();
             var metrics = await client.ExpandMetricsAsync(path1, path2);
-            Assert.IsNotNull(metrics);
-            Assert.AreNotEqual(0, metrics.Length);
-            Assert.IsTrue(metrics.All(x=>x.StartsWith("usage.unittest.")));
-            Assert.IsTrue(metrics.Any(x=>x.StartsWith("usage.unittest.iaas.")));
-            Assert.IsTrue(metrics.Any(x=>x.StartsWith("usage.unittest.license.")));
+            Assert.NotNull(metrics);
+            Assert.NotEmpty(metrics);
+            Assert.True(metrics.All(x=>x.StartsWith("usage.unittest.")));
+            Assert.Contains(metrics, x =>x.StartsWith("usage.unittest.iaas."));
+            Assert.Contains(metrics, x =>x.StartsWith("usage.unittest.license."));
         }
 
-        [TestMethod]
+        [Fact]
         public void CanDeserializeMetrics()
         {
             var json = "{\"is_leaf\": \"0\", \"name\": \"pickled\", \"path\": \"usage.unittest.pickled.\"}";
             var metric = JsonConvert.DeserializeObject<GraphiteMetric>(json);
-            Assert.AreEqual("usage.unittest.pickled", metric.Id);
-            Assert.AreEqual("pickled", metric.Text);
-            Assert.IsFalse(metric.Leaf);
-            Assert.IsTrue(metric.Expandable);
+            Assert.Equal("usage.unittest.pickled", metric.Id);
+            Assert.Equal("pickled", metric.Text);
+            Assert.False(metric.Leaf);
+            Assert.True(metric.Expandable);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanDeserializeMetricsData()
         {
             var json = "{\"target\": \"usage.unittest.cpu.count\", \"datapoints\": [[3.5, 1474716420], [null, 1474716480], [null, 1474716540], [0, 1474716600], [7.0, 1474716660], [null, 1474716720], [null, 1474716780]]}";
             var data = JsonConvert.DeserializeObject<GraphiteMetricData>(json);
-            Assert.AreEqual("usage.unittest.cpu.count", data.Target);
-            Assert.IsNotNull(data.Datapoints);
-            Assert.AreEqual(7,data.Datapoints.Length);
+            Assert.Equal("usage.unittest.cpu.count", data.Target);
+            Assert.NotNull(data.Datapoints);
+            Assert.Equal(7,data.Datapoints.Length);
             var value = data.Datapoints[0];
-            Assert.AreEqual(3.5, value.Value);
-            Assert.AreEqual(1474716420, value.UnixTimestamp);
-            Assert.AreEqual(new DateTime(2016, 09, 24, 11, 27, 0), value.Timestamp);
+            Assert.Equal(3.5, value.Value);
+            Assert.Equal(1474716420, value.UnixTimestamp);
+            Assert.Equal(new DateTime(2016, 09, 24, 11, 27, 0), value.Timestamp);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanSerialize()
         {
             var datapoint = new MetricDatapoint(null, 987654321);
             var json = JsonConvert.SerializeObject(datapoint);
-            Assert.AreEqual("[null,987654321]", json);
+            Assert.Equal("[null,987654321]", json);
 
             var datapoint2 = new MetricDatapoint(5, 123456789);
             json = JsonConvert.SerializeObject(datapoint2);
-            Assert.AreEqual("[5.0,123456789]", json);
+            Assert.Equal("[5.0,123456789]", json);
 
             var metricData = new GraphiteMetricData("unit.test", new[] { datapoint2, datapoint });
             json = JsonConvert.SerializeObject(metricData);
-            Assert.AreEqual("{\"target\":\"unit.test\",\"datapoints\":[[5.0,123456789],[null,987654321]]}", json);
+            Assert.Equal("{\"target\":\"unit.test\",\"datapoints\":[[5.0,123456789],[null,987654321]]}", json);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task CanGetMetricValues()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost);
+            var client = new GraphiteClient(GraphiteHost);
             var metric = new GraphitePath("usage").Dot("unittest").Dot("iaas").DotWildcard().Dot("cpu").Dot("max");
             var data = await client.GetMetricsDataAsync(metric);
-            Assert.IsNotNull(data);
+            Assert.NotNull(data);
             var series = data.FirstOrDefault();
-            Assert.IsNotNull(series);
-            Assert.IsNotNull(series.Datapoints);
-            Assert.AreNotEqual(0, series.Datapoints.Length);
-            Assert.IsTrue(series.Datapoints.Any(x=>x.Value.HasValue));
-            Assert.IsTrue(series.Datapoints.All(x=>x.Timestamp < DateTime.Now));
+            Assert.NotNull(series);
+            Assert.NotNull(series.Datapoints);
+            Assert.NotEmpty(series.Datapoints);
+            Assert.Contains(series.Datapoints, x =>x.Value.HasValue);
+            Assert.True(series.Datapoints.All(x=>x.Timestamp < DateTime.Now));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CanQueryLongFormulas()
         {
-            var client = new GraphiteClient(Settings.Default.GraphiteHost){UseSsl = false};
+            var client = new GraphiteClient(GraphiteHost){UseSsl = false};
             var metrics = new SeriesListBase[768];
             for (int i = 0; i < metrics.Length; i++)
             {
@@ -254,8 +255,7 @@ namespace ahd.Graphite.Test
                     .Alias(i.ToString());
             }
             var metric = metrics.Sum();
-            if (metric.ToString().Length < UInt16.MaxValue)
-                Assert.Inconclusive("request too short to fail");
+            Assert.True(metric.ToString().Length > UInt16.MaxValue, "request too short to fail");
             try
             {
                 await client.GetMetricsDataAsync(metric);
