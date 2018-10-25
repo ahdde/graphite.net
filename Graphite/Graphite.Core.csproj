@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>ahd.Graphite</AssemblyName>
+        <RootNamespace>ahd.Graphite</RootNamespace>
+        <PackageVersion>1.0.11</PackageVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Properties\AssemblyInfo.cs" />
+      <Compile Remove="Properties\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="app.config" />
+      <None Remove="Graphite.csproj.vspscc" />
+      <None Remove="Graphite.nuspec" />
+      <None Remove="packages.config" />
+      <None Remove="Properties\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Properties\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.6" />
+      <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
+      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+      <PackageReference Include="Razorvine.Pyrolite" Version="4.21.0" />
+      <PackageReference Include="Razorvine.Serpent" Version="1.25.0" />
+    </ItemGroup>
+
+</Project>

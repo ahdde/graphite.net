@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphite", "Graphite\Graphi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphite.Test", "Graphite.Test\Graphite.Test.csproj", "{C4EB3065-0684-4CC2-8327-3429C5DE9C16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphite.Core", "Graphite\Graphite.Core.csproj", "{06A2719D-DB14-47A2-B8AB-A33163A33A33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphite.Core.Tests", "Graphite.Core.Tests\Graphite.Core.Tests.csproj", "{4C8A0198-4956-48DB-BBBC-C5B93AFD138B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +25,16 @@ Global
 		{C4EB3065-0684-4CC2-8327-3429C5DE9C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4EB3065-0684-4CC2-8327-3429C5DE9C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4EB3065-0684-4CC2-8327-3429C5DE9C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06A2719D-DB14-47A2-B8AB-A33163A33A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06A2719D-DB14-47A2-B8AB-A33163A33A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06A2719D-DB14-47A2-B8AB-A33163A33A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06A2719D-DB14-47A2-B8AB-A33163A33A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C8A0198-4956-48DB-BBBC-C5B93AFD138B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C8A0198-4956-48DB-BBBC-C5B93AFD138B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C8A0198-4956-48DB-BBBC-C5B93AFD138B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C8A0198-4956-48DB-BBBC-C5B93AFD138B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection	
+	EndGlobalSection
 EndGlobal
