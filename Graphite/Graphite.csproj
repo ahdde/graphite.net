@@ -4,7 +4,8 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>ahd.Graphite</RootNamespace>
     <AssemblyName>ahd.Graphite</AssemblyName>
-    <Version>1.1.0</Version>
+    <Title>Graphite client</Title>
+    <Version>1.0.11</Version>
     <Authors>ahd GmbH &amp; Co. KG</Authors>
     <Company>ahd GmbH &amp; Co. KGahd GmbH &amp; Co. KG</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
