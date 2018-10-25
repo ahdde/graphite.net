@@ -7,7 +7,7 @@
     <Title>Graphite client</Title>
     <Version>1.0.11</Version>
     <Authors>ahd GmbH &amp; Co. KG</Authors>
-    <Company>ahd GmbH &amp; Co. KGahd GmbH &amp; Co. KG</Company>
+    <Company>ahd GmbH &amp; Co. KG</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/ahdde/graphite.net</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.github.com/ahdde/graphite.net/master/LICENSE.md</PackageLicenseUrl>
