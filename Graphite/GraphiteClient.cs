@@ -49,6 +49,7 @@ namespace ahd.Graphite
             HttpApiPort = 443;
             Formatter = new PlaintextGraphiteFormatter();
             BatchSize = 500;
+            UseDualStack = true;
         }
         
         /// <summary>
@@ -76,6 +77,11 @@ namespace ahd.Graphite
         /// Maximum number of datapoints to send in a single request - default "500"
         /// </summary>
         public int BatchSize { get; set; }
+
+        /// <summary>
+        /// Use ip dual stack for sending metrics
+        /// </summary>
+        public bool UseDualStack { get; set; }
 
         /// <summary>
         /// Send a single datapoint
@@ -153,9 +159,18 @@ namespace ahd.Graphite
 
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken)
         {
-            using (var client = new TcpClient(AddressFamily.InterNetworkV6))
+            TcpClient client;
+            if (UseDualStack)
             {
+                client = new TcpClient(AddressFamily.InterNetworkV6) {Client = {DualMode = true}};
                 client.Client.DualMode = true;
+            }
+            else
+            {
+                client = new TcpClient();
+            }
+            using (client)
+            {
                 await client.ConnectAsync(Host, Formatter.Port).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
                 using (var stream = client.GetStream())
