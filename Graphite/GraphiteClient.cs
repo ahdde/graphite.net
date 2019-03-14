@@ -79,7 +79,7 @@ namespace ahd.Graphite
         public int BatchSize { get; set; }
 
         /// <summary>
-        /// Use ip dual stack for sending metrics
+        /// Use ip dual stack for sending metrics. Defaults to true.
         /// </summary>
         public bool UseDualStack { get; set; }
 
@@ -163,7 +163,6 @@ namespace ahd.Graphite
             if (UseDualStack)
             {
                 client = new TcpClient(AddressFamily.InterNetworkV6) {Client = {DualMode = true}};
-                client.Client.DualMode = true;
             }
             else
             {
