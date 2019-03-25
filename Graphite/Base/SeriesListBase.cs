@@ -997,10 +997,10 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// Let's you invoke arbitrary named functions, which are not yet implemented
+        /// lets you invoke arbitrary named functions which are not yet implemented
         /// </summary>
         /// <param name="name">graphite function name</param>
-        /// <param name="parameter">function parameter</param>
+        /// <param name="parameter">function parameters</param>
         /// <returns></returns>
         [Obsolete("please open an issue to add support for this unknown function")]
         public SeriesListFunction Function(string name, params object[] parameter)
