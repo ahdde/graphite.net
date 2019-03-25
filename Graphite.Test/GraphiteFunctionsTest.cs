@@ -29,6 +29,10 @@ namespace ahd.Graphite.Test
         {
             var aggregateLine = _series.AggregateLine();
             Assert.Equal("aggregateLine(metric,'avg')", aggregateLine.ToString());
+            aggregateLine = _series.AggregateLine("sum", false);
+            Assert.Equal("aggregateLine(metric,'sum')", aggregateLine.ToString());
+            aggregateLine = _series.AggregateLine("sum", true);
+            Assert.Equal("aggregateLine(metric,'sum',1)", aggregateLine.ToString());
         }
 
         [Fact]
