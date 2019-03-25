@@ -29,6 +29,10 @@ namespace ahd.Graphite.Test
         {
             var aggregateLine = _series.AggregateLine();
             Assert.Equal("aggregateLine(metric,'avg')", aggregateLine.ToString());
+            aggregateLine = _series.AggregateLine("sum", false);
+            Assert.Equal("aggregateLine(metric,'sum')", aggregateLine.ToString());
+            aggregateLine = _series.AggregateLine("sum", true);
+            Assert.Equal("aggregateLine(metric,'sum',1)", aggregateLine.ToString());
         }
 
         [Fact]
@@ -769,6 +773,15 @@ namespace ahd.Graphite.Test
         {
             var series = _series.Template(new Tuple<string, string>("hostname", "worker1"));
             Assert.Equal("template(metric,hostname=\"worker1\")", series.ToString());
+        }
+
+        [Fact]
+        public void Function()
+        {
+#pragma warning disable 618
+            var series = _series.Function("aggregateLine", "'average'", true);
+#pragma warning restore 618
+            Assert.Equal("aggregateLine(metric,'average',True)", series.ToString());
         }
     }
 }

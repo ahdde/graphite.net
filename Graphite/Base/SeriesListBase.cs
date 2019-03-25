@@ -81,6 +81,18 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
+        /// Takes a metric or wildcard seriesList and draws a horizontal line based on the function applied to each series.<para/>
+        /// <remarks>By default, the graphite renderer consolidates data points by averaging data points over time. If you are using the ‘min’ or ‘max’ function for aggregateLine, this can cause an unusual gap in the line drawn by this function and the data itself. To fix this, you should use the consolidateBy() function with the same function argument you are using for aggregateLine. This will ensure that the proper data points are retained and the graph should line up correctly.<para>
+        /// If the optional keepStep parameter is set to True, the result will have the same time period and step as the source series.</para></remarks>
+        /// </summary>
+        public SeriesListFunction AggregateLine(string func, bool keepState)
+        {
+            if (keepState)
+                return Ternary("aggregateLine", SingleQuote(func), 1);
+            return AggregateLine(func);
+        }
+
+        /// <summary>
         /// Takes a seriesList and applies an alias derived from the base metric name.
         /// </summary>
         public SeriesListFunction AliasByMetric()
@@ -982,6 +994,18 @@ namespace ahd.Graphite.Base
         public SeriesListFunction Template(params string[] defaultValues)
         {
             return new SeriesListFunction("template", Merge(this, defaultValues.Select(DoubleQuote).ToArray()));  
+        }
+
+        /// <summary>
+        /// lets you invoke arbitrary named functions which are not yet implemented
+        /// </summary>
+        /// <param name="name">graphite function name</param>
+        /// <param name="parameter">function parameters</param>
+        /// <returns></returns>
+        [Obsolete("please open an issue to add support for this unknown function")]
+        public SeriesListFunction Function(string name, params object[] parameter)
+        {
+            return new SeriesListFunction(name, Merge(this, parameter));
         }
     }
 }
