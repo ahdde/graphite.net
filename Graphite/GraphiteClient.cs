@@ -166,7 +166,7 @@ namespace ahd.Graphite
             }
             else
             {
-                client = new TcpClient();
+                client = new TcpClient(AddressFamily.InterNetwork);
             }
             using (client)
             {
