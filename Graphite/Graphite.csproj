@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ahd.Graphite</RootNamespace>
     <AssemblyName>ahd.Graphite</AssemblyName>
     <Title>Graphite client</Title>
-    <Version>2.1.1</Version>
+    <Version>2.2.0</Version>
     <Authors>ahd GmbH &amp; Co. KG</Authors>
     <Company>ahd GmbH &amp; Co. KG</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -32,16 +32,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Razorvine.Pyrolite" Version="4.21.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="Razorvine.Pyrolite" Version="4.19.0" />
-    <Reference Include="System.Net.Http"/>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Razorvine.Pyrolite" Version="4.31.0" />
   </ItemGroup>
 
 </Project>

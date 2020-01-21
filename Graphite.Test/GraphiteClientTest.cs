@@ -10,7 +10,6 @@ using ahd.Graphite.Base;
 using Newtonsoft.Json;
 using Razorvine.Pickle;
 using Xunit;
-using Xunit.Sdk;
 
 namespace ahd.Graphite.Test
 {
