@@ -15,6 +15,11 @@ namespace ahd.Graphite
         private static readonly ConcurrentDictionary<(string,ushort), ObjectPool<TcpClient>> Cache = new ConcurrentDictionary<(string,ushort), ObjectPool<TcpClient>>();
         private readonly ObjectPool<TcpClient> _pool;
 
+        /// <summary>
+        /// create or reuse a connectionpool for the specified endpoint. If there is already an existing connectionpool it is reused.
+        /// </summary>
+        /// <param name="hostname">Graphite hostname</param>
+        /// <param name="formatter">formatter for sending data to graphite</param>
         public CarbonConnectionPool(string hostname, IGraphiteFormatter formatter)
         {
             _hostname = hostname;
@@ -22,6 +27,9 @@ namespace ahd.Graphite
             _pool = Cache.GetOrAdd((hostname, _formatter.Port), CreatePool);
         }
 
+        /// <summary>
+        /// clears all connection from all endpoints
+        /// </summary>
         public static void ClearAllPools()
         {
             foreach (var entry in Cache)
@@ -34,6 +42,9 @@ namespace ahd.Graphite
             }
         }
 
+        /// <summary>
+        /// clears all connections from the current pool
+        /// </summary>
         public void ClearPool()
         {
             Cache.TryRemove((_hostname, _formatter.Port), out _);
@@ -41,6 +52,11 @@ namespace ahd.Graphite
             disposable?.Dispose();
         }
 
+        /// <summary>
+        /// returns a pooled connection or creates a new connection
+        /// <remarks>the connection is tested before returning to the caller</remarks>
+        /// </summary>
+        /// <returns></returns>
         public TcpClient Get()
         {
             var client = _pool.Get();
@@ -57,6 +73,10 @@ namespace ahd.Graphite
             return client;
         }
 
+        /// <summary>
+        /// returns the connection to the pool
+        /// </summary>
+        /// <param name="client">the connection to return to the pool</param>
         public void Return(TcpClient client)
         {
             _pool.Return(client);
@@ -76,6 +96,13 @@ namespace ahd.Graphite
             }
         }
 
+        /// <summary>
+        /// returns a pooled connection or creates a new connection
+        /// <remarks>the connection is tested before returning to the caller</remarks>
+        /// </summary>
+        /// <param name="useDualStack">Use ip dual stack for sending metrics</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns></returns>
         public async Task<TcpClient> GetAsync(bool useDualStack, CancellationToken cancellationToken)
         {
             var client = _pool.Get();
