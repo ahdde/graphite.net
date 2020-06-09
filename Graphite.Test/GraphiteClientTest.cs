@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
 using Newtonsoft.Json;
@@ -73,8 +74,81 @@ namespace ahd.Graphite.Test
             var recvTask = ReceiveMetric(server);
             var sendTask = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             await sendTask;
+            new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
             var metric = await recvTask;
             Assert.Contains("usage.unittest.cpu.count", metric);
+            server.Stop();
+            Console.WriteLine(metric);
+        }
+
+        [Fact]
+        public async Task CanReusePooledConnectionMetric()
+        {
+            var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
+            server.Start();
+            var client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            var recvTask = ReceiveMetric(server);
+            await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
+            
+            client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
+            new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
+
+            var metric = await recvTask;
+            Assert.Contains("usage.unittest.cpu.count", metric);
+            server.Stop();
+            Console.WriteLine(metric);
+        }
+
+        [Fact]
+        public async Task BrokenPooledConnectionIsDetected()
+        {
+            var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
+            server.Start();
+            var client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+
+            var send =client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount); 
+            using (var conn = await server.AcceptTcpClientAsync())
+            using (var stream = conn.GetStream())
+            using (var reader = new StreamReader(stream))
+            { 
+                var receive =reader.ReadLineAsync();
+                await send;
+                await receive;
+            }
+            client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            var recvTask = ReceiveMetric(server);
+            await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
+            new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
+
+            var metric = await recvTask;
+            Assert.Contains("usage.unittest.cpu.count", metric);
+            server.Stop();
+            Console.WriteLine(metric);
+        }
+
+        [Fact]
+        public async Task BrokenPooledConnectionIsDetectedForPickle()
+        {
+            var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
+            server.Start();
+            var client = new GraphiteClient("localhost", new PickleGraphiteFormatter(33225));
+
+            var send =client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount); 
+            using (var conn = await server.AcceptTcpClientAsync())
+            using (var stream = conn.GetStream())
+            using (var reader = new StreamReader(stream))
+            { 
+                var receive =reader.ReadAsync(new char[1], 0, 1);
+                await send;
+                await receive;
+            }
+            client = new GraphiteClient("localhost", new PickleGraphiteFormatter(33225));
+            var recvTask = ReceiveMetric(server);
+            await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
+            new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
+
+            var metric = await recvTask;
             server.Stop();
             Console.WriteLine(metric);
         }
@@ -130,6 +204,38 @@ namespace ahd.Graphite.Test
             var client = new GraphiteClient("test-ipv6.com", new PlaintextGraphiteFormatter(80));
             await client.SendAsync("usage.unittest.cpu.count", 1);
             client.Send("usage.unittest.cpu.count", 1);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public void CanSendManyMetrics()
+        {
+            var random = new Random();
+            while (random.Next() > 0)
+            {
+                var client = new GraphiteClient(GraphiteHost, new PickleGraphiteFormatter());
+                client.Send("test.client.random1", random.NextDouble() * 100);
+                client = new GraphiteClient(GraphiteHost, new PlaintextGraphiteFormatter());
+                client.Send("test.client.random2", random.NextDouble() * 100);
+                Thread.Sleep(500);
+            }
+            CarbonConnectionPool.ClearAllPools();
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task CanSendManyMetricsAsync()
+        {
+            var random = new Random();
+            while (random.Next() > 0)
+            {
+                var client = new GraphiteClient(GraphiteHost, new PickleGraphiteFormatter());
+                await client.SendAsync("test.client.random1", random.NextDouble() * 100);
+                client = new GraphiteClient(GraphiteHost, new PlaintextGraphiteFormatter());
+                await client.SendAsync("test.client.random2", random.NextDouble() * 100);
+                await Task.Delay(500);
+            }
+            CarbonConnectionPool.ClearAllPools();
         }
 
         class TestGraphiteFormatter : PlaintextGraphiteFormatter
