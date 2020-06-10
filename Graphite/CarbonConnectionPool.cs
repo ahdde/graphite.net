@@ -8,6 +8,9 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace ahd.Graphite
 {
+    /// <summary>
+    /// Connection pool for TCP connections to carbon
+    /// </summary>
     public class CarbonConnectionPool
     {
         private readonly string _hostname;
