@@ -160,10 +160,15 @@ namespace ahd.Graphite
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken)
         {
             TcpClient client = await _carbonPool.GetAsync(UseDualStack, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
-            var stream = client.GetStream();
-            await Formatter.WriteAsync(stream, datapoints, cancellationToken).ConfigureAwait(false);
-            _carbonPool.Return(client);
+            try
+            {
+                var stream = client.GetStream();
+                await Formatter.WriteAsync(stream, datapoints, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                _carbonPool.Return(client);
+            }
         }
 
         /// <summary>
@@ -241,9 +246,15 @@ namespace ahd.Graphite
         private void SendInternal(ICollection<Datapoint> datapoints)
         {
             var client = _carbonPool.Get();
-            var stream = client.GetStream();
-            Formatter.Write(stream, datapoints);
-            _carbonPool.Return(client);
+            try
+            {
+                var stream = client.GetStream();
+                Formatter.Write(stream, datapoints);
+            }
+            finally
+            {
+                _carbonPool.Return(client);
+            }
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace ahd.Graphite
         private readonly ObjectPool<TcpClient> _pool;
 
         /// <summary>
-        /// create or reuse a connectionpool for the specified endpoint. If there is already an existing connectionpool it is reused.
+        /// Create or reuse a connection pool for the specified endpoint. If there is already an existing connection pool for the specified endpoint it is reused.
         /// </summary>
         /// <param name="hostname">Graphite hostname</param>
         /// <param name="formatter">formatter for sending data to graphite</param>
@@ -31,7 +31,7 @@ namespace ahd.Graphite
         }
 
         /// <summary>
-        /// clears all connection from all endpoints
+        /// clears all connections from all endpoints
         /// </summary>
         public static void ClearAllPools()
         {
