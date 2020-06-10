@@ -91,11 +91,13 @@ namespace ahd.Graphite.Test
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             
             client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
-            await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
+            await client.SendAsync("usage.unittest.ram.count", Environment.ProcessorCount);
+            //"kill" all existing tcp connections
             new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
 
             var metric = await recvTask;
             Assert.Contains("usage.unittest.cpu.count", metric);
+            Assert.Contains("usage.unittest.ram.count", metric);
             server.Stop();
             Console.WriteLine(metric);
         }
@@ -107,7 +109,8 @@ namespace ahd.Graphite.Test
             server.Start();
             var client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
 
-            var send =client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount); 
+            var send = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
+            //accept and dispose client connection
             using (var conn = await server.AcceptTcpClientAsync())
             using (var stream = conn.GetStream())
             using (var reader = new StreamReader(stream))
@@ -134,7 +137,8 @@ namespace ahd.Graphite.Test
             server.Start();
             var client = new GraphiteClient("localhost", new PickleGraphiteFormatter(33225));
 
-            var send =client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount); 
+            var send = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount); 
+            //accept and dispose client connection
             using (var conn = await server.AcceptTcpClientAsync())
             using (var stream = conn.GetStream())
             using (var reader = new StreamReader(stream))

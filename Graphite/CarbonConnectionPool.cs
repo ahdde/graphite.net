@@ -125,8 +125,8 @@ namespace ahd.Graphite
             }
             else
             {
-                if (!await TestAsync(client, cancellationToken))
-                    return await GetAsync(useDualStack, cancellationToken);
+                if (!await TestAsync(client, cancellationToken).ConfigureAwait(false))
+                    return await GetAsync(useDualStack, cancellationToken).ConfigureAwait(false);
             }
             return client;
         }
@@ -135,7 +135,7 @@ namespace ahd.Graphite
         {
             try
             {
-                await _formatter.TestConnectionAsync(client.GetStream(), cancellationToken);
+                await _formatter.TestConnectionAsync(client.GetStream(), cancellationToken).ConfigureAwait(false);
                 return true;
             }
             catch (IOException ex) when (ex.InnerException is SocketException se && CheckSocketException(se))

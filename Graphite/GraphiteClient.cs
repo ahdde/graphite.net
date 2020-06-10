@@ -159,7 +159,7 @@ namespace ahd.Graphite
 
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken)
         {
-            TcpClient client = await _carbonPool.GetAsync(UseDualStack, cancellationToken);
+            TcpClient client = await _carbonPool.GetAsync(UseDualStack, cancellationToken).ConfigureAwait(false);
             try
             {
                 var stream = client.GetStream();
