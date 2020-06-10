@@ -12,8 +12,8 @@ var client = new GraphiteClient("example.com");
 var datapoints = = new[]
     {
         new Datapoint("data.server1.cpuUsage", 10, DateTime.Now),
-        new Datapoint("data.server2.cpuUsage", 15, DateTime.Now)),
-        new Datapoint("data.server3.cpuUsage", 20, DateTime.Now)),
+        new Datapoint("data.server2.cpuUsage", 15, DateTime.Now),
+        new Datapoint("data.server3.cpuUsage", 20, DateTime.Now),
     };
 
 await client.SendAsync(datapoints);
