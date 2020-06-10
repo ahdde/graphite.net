@@ -16,40 +16,40 @@ namespace ahd.Graphite
     /// </summary>
     public class GraphiteClient
     {
+        private readonly CarbonConnectionPool _carbonPool;
+
         /// <summary>
         /// Creates a client with the specified host and formatter
         /// </summary>
         /// <param name="host">Graphite hostname</param>
         /// <param name="formatter">formatter for sending data to graphite</param>
-        public GraphiteClient(string host, IGraphiteFormatter formatter) : this(host)
+        public GraphiteClient(string host, IGraphiteFormatter formatter)
         {
+            if (String.IsNullOrEmpty(host)) throw new ArgumentNullException(nameof(host));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
             Formatter = formatter;
+            Host = host;
+            UseSsl = true;
+            HttpApiPort = 443;
+            BatchSize = 500;
+            UseDualStack = true;
+            _carbonPool = new CarbonConnectionPool(Host, Formatter);
         }
         
         /// <summary>
         /// Creates a client with the specified host
         /// </summary>
         /// <param name="host">Graphite hostname</param>
-        public GraphiteClient(string host):this()
+        public GraphiteClient(string host):this(host, new PlaintextGraphiteFormatter())
         {
-            if (String.IsNullOrEmpty(host)) throw new ArgumentNullException(nameof(host));
-
-            Host = host;
         }
 
         /// <summary>
         /// Creates a client for localhost
         /// </summary>
-        public GraphiteClient()
+        public GraphiteClient():this("localhost", new PlaintextGraphiteFormatter())
         {
-            Host = "localhost";
-            UseSsl = true;
-            HttpApiPort = 443;
-            Formatter = new PlaintextGraphiteFormatter();
-            BatchSize = 500;
-            UseDualStack = true;
         }
         
         /// <summary>
@@ -159,23 +159,15 @@ namespace ahd.Graphite
 
         private async Task SendInternalAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken)
         {
-            TcpClient client;
-            if (UseDualStack)
+            TcpClient client = await _carbonPool.GetAsync(UseDualStack, cancellationToken).ConfigureAwait(false);
+            try
             {
-                client = new TcpClient(AddressFamily.InterNetworkV6) {Client = {DualMode = true}};
+                var stream = client.GetStream();
+                await Formatter.WriteAsync(stream, datapoints, cancellationToken).ConfigureAwait(false);
             }
-            else
+            finally
             {
-                client = new TcpClient(AddressFamily.InterNetwork);
-            }
-            using (client)
-            {
-                await client.ConnectAsync(Host, Formatter.Port).ConfigureAwait(false);
-                cancellationToken.ThrowIfCancellationRequested();
-                using (var stream = client.GetStream())
-                {
-                    await Formatter.WriteAsync(stream, datapoints, cancellationToken).ConfigureAwait(false);
-                }
+                _carbonPool.Return(client);
             }
         }
 
@@ -253,12 +245,15 @@ namespace ahd.Graphite
 
         private void SendInternal(ICollection<Datapoint> datapoints)
         {
-            using (var client = new TcpClient(Host, Formatter.Port))
+            var client = _carbonPool.Get();
+            try
             {
-                using (var stream = client.GetStream())
-                {
-                    Formatter.Write(stream, datapoints);
-                }
+                var stream = client.GetStream();
+                Formatter.Write(stream, datapoints);
+            }
+            finally
+            {
+                _carbonPool.Return(client);
             }
         }
 

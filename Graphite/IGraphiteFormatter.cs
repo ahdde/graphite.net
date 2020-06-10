@@ -30,5 +30,19 @@ namespace ahd.Graphite
         /// target port to send the data to
         /// </summary>
         ushort Port { get; }
+
+        /// <summary>
+        /// send dummy data to test the underlying connection
+        /// </summary>
+        /// <param name="stream">target stream to test</param>
+        void TestConnection(Stream stream);
+
+        /// <summary>
+        /// send dummy data to test the underlying connection
+        /// </summary>
+        /// <param name="stream">target stream to test</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns></returns>
+        Task TestConnectionAsync(Stream stream, CancellationToken cancellationToken);
     }
 }

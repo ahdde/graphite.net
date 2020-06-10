@@ -9,11 +9,11 @@ Client library for submitting data to and querying from [graphite](https://githu
 ```csharp
 var client = new GraphiteClient("example.com");
 
-var datapoints = = new[]
+var datapoints = new[]
     {
         new Datapoint("data.server1.cpuUsage", 10, DateTime.Now),
-        new Datapoint("data.server2.cpuUsage", 15, DateTime.Now)),
-        new Datapoint("data.server3.cpuUsage", 20, DateTime.Now)),
+        new Datapoint("data.server2.cpuUsage", 15, DateTime.Now),
+        new Datapoint("data.server3.cpuUsage", 20, DateTime.Now),
     };
 
 await client.SendAsync(datapoints);
@@ -41,7 +41,7 @@ For details take a look at the [tests](https://github.com/ahdde/graphite.net/blo
 
 All existing libraries we found supported only string parameters for querying graphite. To fix this we wrote our own statically typed client.
 
-This client also supports sending batch data via the python pickle protocol (in addition to the plaintext protocol) (many thanks to [Pyrolite](https://github.com/irmen/Pyrolite)).
+This client also supports sending batch data via the python pickle protocol (in addition to the plaintext protocol) (many thanks to [Razorvine](https://github.com/irmen/pickle)).
 
 ## Installation
 

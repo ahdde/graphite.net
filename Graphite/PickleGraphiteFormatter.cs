@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Razorvine.Pickle;
@@ -15,7 +16,7 @@ namespace ahd.Graphite
     {
         /// <inheritdoc/>
         public ushort Port { get; }
-        
+
         /// <summary>
         /// Creates a pickle formatter with a custom destination port
         /// </summary>
@@ -71,6 +72,18 @@ namespace ahd.Graphite
                 stream.Write(pickled, 0, pickled.Length);
                 stream.Flush();
             }
+        }
+
+        /// <inheritdoc/>
+        public void TestConnection(Stream stream)
+        {
+            Write(stream, Array.Empty<Datapoint>());
+        }
+
+        /// <inheritdoc/>
+        public Task TestConnectionAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            return WriteAsync(stream, Array.Empty<Datapoint>(), cancellationToken);
         }
     }
 }
