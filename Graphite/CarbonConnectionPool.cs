@@ -67,6 +67,7 @@ namespace ahd.Graphite
             {
                 client.Dispose();
                 client = new TcpClient(_hostname, _formatter.Port);
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
             }
             else
             {
@@ -120,6 +121,7 @@ namespace ahd.Graphite
                 {
                     client = new TcpClient(AddressFamily.InterNetwork);
                 }
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
                 cancellationToken.ThrowIfCancellationRequested();
                 await client.ConnectAsync(_hostname, _formatter.Port).ConfigureAwait(false);
             }
