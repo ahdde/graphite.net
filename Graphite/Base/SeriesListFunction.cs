@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace ahd.Graphite.Base
 {
@@ -31,7 +32,7 @@ namespace ahd.Graphite.Base
         /// <returns>the graphite string representation of the function call</returns>
         protected string FunctionCall()
         {
-            var paramValues = String.Join(",", _parameter);
+            var paramValues = String.Join(",", _parameter.Where(x=>!(x is null)));
             return $"{FunctionName}({paramValues})";
         }
 

@@ -32,9 +32,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Functions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Functions.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Razorvine.Pickle" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Functions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Functions.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Functions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Functions.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

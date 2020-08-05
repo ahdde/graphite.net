@@ -14,7 +14,7 @@ namespace ahd.Graphite.Test
         public void Alias()
         {
             var alias = _series.Alias("Foo");
-            Assert.Equal("alias(metric,\"Foo\")", alias.ToString());
+            Assert.Equal("alias(metric,'Foo')", alias.ToString());
         }
 
         [Fact]
@@ -28,9 +28,11 @@ namespace ahd.Graphite.Test
         public void AggregateLine()
         {
             var aggregateLine = _series.AggregateLine();
-            Assert.Equal("aggregateLine(metric,'avg')", aggregateLine.ToString());
-            aggregateLine = _series.AggregateLine("sum", false);
+            Assert.Equal("aggregateLine(metric)", aggregateLine.ToString());
+            aggregateLine = _series.AggregateLine("sum");
             Assert.Equal("aggregateLine(metric,'sum')", aggregateLine.ToString());
+            aggregateLine = _series.AggregateLine("sum", false);
+            Assert.Equal("aggregateLine(metric,'sum',0)", aggregateLine.ToString());
             aggregateLine = _series.AggregateLine("sum", true);
             Assert.Equal("aggregateLine(metric,'sum',1)", aggregateLine.ToString());
         }
@@ -53,7 +55,7 @@ namespace ahd.Graphite.Test
         public void AliasSub()
         {
             var aliasSub = _series.AliasSub("^.*TCP(\\d+)", "\\1");
-            Assert.Equal("aliasSub(metric,\"^.*TCP(\\d+)\",\"\\1\")", aliasSub.ToString());
+            Assert.Equal("aliasSub(metric,'^.*TCP(\\d+)','\\1')", aliasSub.ToString());
         }
 
         [Fact]
@@ -62,7 +64,7 @@ namespace ahd.Graphite.Test
             var innerCalc = GraphitePath.Parse("%.disk.bytes_free")
                 .DivideSeries(GraphitePath.Parse("%.disk.bytes_*").SumSeriesWithWildcards());
             var applyByNode = GraphitePath.Parse("servers.*.disk.bytes_free").ApplyByNode(1, innerCalc);
-            Assert.Equal("applyByNode(servers.*.disk.bytes_free,1,\"divideSeries(%.disk.bytes_free,sumSeriesWithWildcards(%.disk.bytes_*))\")", applyByNode.ToString());
+            Assert.Equal("applyByNode(servers.*.disk.bytes_free,1,'divideSeries(%.disk.bytes_free,sumSeriesWithWildcards(%.disk.bytes_*))')", applyByNode.ToString());
         }
 
         [Fact]
@@ -125,7 +127,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public void ConsolidateBy()
         {
-            var series = _series.ConsolidateBy(ConsolidateFunction.max);
+            var series = _series.ConsolidateBy("max");
             Assert.Equal("consolidateBy(metric,'max')", series.ToString());
         }
 
@@ -182,7 +184,7 @@ namespace ahd.Graphite.Test
         public void Exclude()
         {
             var series = _series.Exclude("server02");
-            Assert.Equal("exclude(metric,\"server02\")", series.ToString());
+            Assert.Equal("exclude(metric,'server02')", series.ToString());
         }
 
         [Fact]
@@ -196,7 +198,7 @@ namespace ahd.Graphite.Test
         public void Grep()
         {
             var series = _series.Grep("server02");
-            Assert.Equal("grep(metric,\"server02\")", series.ToString());
+            Assert.Equal("grep(metric,'server02')", series.ToString());
         }
 
         [Fact]
@@ -208,8 +210,8 @@ namespace ahd.Graphite.Test
             var sumSeries = _series.Group(new GraphitePath("test1"), _series);
             Assert.Equal("group(metric,test1,metric)", sumSeries.ToString());
 
-            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
-            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            var serie1 = _series.ConsolidateBy("max");
+            var serie2 = _series.ConsolidateBy("sum");
             Assert.Equal("group(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] {serie1, serie2}.Group().ToString());
 
             IEnumerable<SeriesListBase> sources = new[] { _series };
@@ -219,15 +221,15 @@ namespace ahd.Graphite.Test
         [Fact]
         public void GroupByNode()
         {
-            var series = _series.GroupByNode(2, x => x.Sum);
-            Assert.Equal("groupByNode(metric,2,\"sum\")", series.ToString());
+            var series = _series.GroupByNode(2, (x,y) => x.Sum(y));
+            Assert.Equal("groupByNode(metric,2,'sum')", series.ToString());
         }
 
         [Fact]
         public void GroupByNodes()
         {
-            var series = _series.GroupByNodes(x => x.Sum, 1, 4);
-            Assert.Equal("groupByNodes(metric,\"sum\",1,4)", series.ToString());
+            var series = _series.GroupByNodes((x,y) => x.Sum(y), 1, 4);
+            Assert.Equal("groupByNodes(metric,'sum',1,4)", series.ToString());
         }
 
         [Fact]
@@ -255,14 +257,14 @@ namespace ahd.Graphite.Test
         public void Hitcount()
         {
             var series = _series.Hitcount("day", alignToInterval: false);
-            Assert.Equal("hitcount(metric,\"day\",0)", series.ToString());
+            Assert.Equal("hitcount(metric,'day',0)", series.ToString());
         }
 
         [Fact]
         public void HoltWintersAberration()
         {
             var series = _series.HoltWintersAberration();
-            Assert.Equal("holtWintersAberration(metric,3)", series.ToString());
+            Assert.Equal("holtWintersAberration(metric)", series.ToString());
         }
 
         [Fact]
@@ -297,14 +299,14 @@ namespace ahd.Graphite.Test
         public void IntegralByInterval()
         {
             var series = _series.IntegralByInterval("1d");
-            Assert.Equal("integralByInterval(metric,\"1d\")", series.ToString());
+            Assert.Equal("integralByInterval(metric,'1d')", series.ToString());
         }
 
         [Fact]
         public void Interpolate()
         {
             var series = _series.Interpolate(-1);
-            Assert.Equal("interpolate(metric)", series.ToString());
+            Assert.Equal("interpolate(metric,-1)", series.ToString());
             series = _series.Interpolate();
             Assert.Equal("interpolate(metric)", series.ToString());
             series = _series.Interpolate(10);
@@ -330,7 +332,7 @@ namespace ahd.Graphite.Test
         public void KeepLastValue()
         {
             var series = _series.KeepLastValue(-1);
-            Assert.Equal("keepLastValue(metric)", series.ToString());
+            Assert.Equal("keepLastValue(metric,-1)", series.ToString());
             series = _series.KeepLastValue();
             Assert.Equal("keepLastValue(metric)", series.ToString());
             series = _series.KeepLastValue(10);
@@ -345,21 +347,21 @@ namespace ahd.Graphite.Test
         }
 
         [Fact]
-        public void LinearRegressionAnalysis()
+        public void LinearRegression()
         {
-            var series = _series.LinearRegressionAnalysis();
-            Assert.Equal("linearRegressionAnalysis(metric)", series.ToString());
+            var series = _series.LinearRegression();
+            Assert.Equal("linearRegression(metric)", series.ToString());
         }
 
         [Fact]
         public void Logarithm()
         {
-            var series = _series.Logarithm(10);
-            Assert.Equal("logarithm(metric)", series.ToString());
-            series = _series.Logarithm();
-            Assert.Equal("logarithm(metric)", series.ToString());
-            series = _series.Logarithm(2);
-            Assert.Equal("logarithm(metric,2)", series.ToString());
+            var series = _series.Log(10);
+            Assert.Equal("log(metric,10)", series.ToString());
+            series = _series.Log();
+            Assert.Equal("log(metric)", series.ToString());
+            series = _series.Log(2);
+            Assert.Equal("log(metric,2)", series.ToString());
         }
 
         [Fact]
@@ -385,8 +387,8 @@ namespace ahd.Graphite.Test
             var sumSeries = _series.MaxSeries(new GraphitePath("test1"), new GraphitePath("test2"));
             Assert.Equal("maxSeries(metric,test1,test2)", sumSeries.ToString());
 
-            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
-            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            var serie1 = _series.ConsolidateBy("max");
+            var serie2 = _series.ConsolidateBy("sum");
             Assert.Equal("maxSeries(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] { serie1, serie2 }.MaxSeries().ToString());
 
             IEnumerable<SeriesListBase> sources = new[] { _series };
@@ -420,8 +422,8 @@ namespace ahd.Graphite.Test
             var sumSeries = _series.MinSeries(new GraphitePath("test1"), new GraphitePath("test2"));
             Assert.Equal("minSeries(metric,test1,test2)", sumSeries.ToString());
 
-            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
-            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            var serie1 = _series.ConsolidateBy("max");
+            var serie2 = _series.ConsolidateBy("sum");
             Assert.Equal("minSeries(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] { serie1, serie2 }.MinSeries().ToString());
 
             IEnumerable<SeriesListBase> sources = new[] { _series };
@@ -523,8 +525,10 @@ namespace ahd.Graphite.Test
         [Fact]
         public void PercentileOfSeries()
         {
-            var series = _series.PercentileOfSeries(10, false);
+            var series = _series.PercentileOfSeries(10);
             Assert.Equal("percentileOfSeries(metric,10)", series.ToString());
+            series = _series.PercentileOfSeries(10, false);
+            Assert.Equal("percentileOfSeries(metric,10,0)", series.ToString());
             series = _series.PercentileOfSeries(10, true);
             Assert.Equal("percentileOfSeries(metric,10,1)", series.ToString());
         }
@@ -610,7 +614,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public void SmartSummarize()
         {
-            var series = _series.SmartSummarize("1day", x => x.Sum);
+            var series = _series.SmartSummarize("1day", (x,y) => x.Sum(y));
             Assert.Equal("smartSummarize(metric,'1day','sum')", series.ToString());
         }
 
@@ -683,8 +687,8 @@ namespace ahd.Graphite.Test
             var sumSeries = _series.Sum(new GraphitePath("test1"), new GraphitePath("test2"));
             Assert.Equal("sum(metric,test1,test2)", sumSeries.ToString());
 
-            var serie1 = _series.ConsolidateBy(ConsolidateFunction.max);
-            var serie2 = _series.ConsolidateBy(ConsolidateFunction.sum);
+            var serie1 = _series.ConsolidateBy("max");
+            var serie2 = _series.ConsolidateBy("sum");
             Assert.Equal("sum(consolidateBy(metric,'max'),consolidateBy(metric,'sum'))", new SeriesListBase[] {serie1, serie2}.Sum().ToString());
 
             IEnumerable<SeriesListBase> sources = new[] { _series };
@@ -701,7 +705,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public void Summarize()
         {
-            var series = _series.Summarize("1day", SummarizeFunction.sum);
+            var series = _series.Summarize("1day", "sum");
             Assert.Equal("summarize(metric,'1day','sum')", series.ToString());
         }
 
@@ -709,6 +713,8 @@ namespace ahd.Graphite.Test
         public void TimeShift()
         {
             var series = _series.TimeShift("1day", resetEnd: true, alignDst: false);
+            Assert.Equal("timeShift(metric,'1day',1,0)", series.ToString());
+            series = _series.TimeShift("1day");
             Assert.Equal("timeShift(metric,'1day')", series.ToString());
             series = _series.TimeShift("1day", resetEnd: false, alignDst: true);
             Assert.Equal("timeShift(metric,'1day',0,1)", series.ToString());
@@ -722,7 +728,7 @@ namespace ahd.Graphite.Test
             series = _series.TimeSlice("-7day");
             Assert.Equal("timeSlice(metric,'-7day')", series.ToString());
             series = _series.TimeSlice("-7day", "now");
-            Assert.Equal("timeSlice(metric,'-7day')", series.ToString());
+            Assert.Equal("timeSlice(metric,'-7day','now')", series.ToString());
         }
 
         [Fact]
@@ -738,7 +744,7 @@ namespace ahd.Graphite.Test
             var series = _series.TransformNull();
             Assert.Equal("transformNull(metric)", series.ToString());
             series = _series.TransformNull(0);
-            Assert.Equal("transformNull(metric)", series.ToString());
+            Assert.Equal("transformNull(metric,0)", series.ToString());
             series = _series.TransformNull(10);
             Assert.Equal("transformNull(metric,10)", series.ToString());
             series = _series.TransformNull(10, _series);
@@ -749,9 +755,9 @@ namespace ahd.Graphite.Test
         public void UseSeriesAbove()
         {
             var series = _series.UseSeriesAbove(10, "reqs", "time");
-            Assert.Equal("useSeriesAbove(metric,10,\"reqs\",\"time\")", series.ToString());
+            Assert.Equal("useSeriesAbove(metric,10,'reqs','time')", series.ToString());
             series = _series.UseSeriesAbove(1.1, "reqs", "time");
-            Assert.Equal("useSeriesAbove(metric,1.1,\"reqs\",\"time\")", series.ToString());
+            Assert.Equal("useSeriesAbove(metric,1.1,'reqs','time')", series.ToString());
         }
 
         [Fact]
@@ -765,14 +771,14 @@ namespace ahd.Graphite.Test
         public void TemplatePositional()
         {
             var series = _series.Template("worker1");
-            Assert.Equal("template(metric,\"worker1\")", series.ToString());
+            Assert.Equal("template(metric,'worker1')", series.ToString());
         }
 
         [Fact]
         public void TemplateNamed()
         {
             var series = _series.Template(new Tuple<string, string>("hostname", "worker1"));
-            Assert.Equal("template(metric,hostname=\"worker1\")", series.ToString());
+            Assert.Equal("template(metric,hostname='worker1')", series.ToString());
         }
 
         [Fact]
