@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace ahd.Graphite.Base
@@ -86,28 +85,13 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// Calculates a percentage of the total of a wildcard series. If total is specified, each series will be calculated as a percentage of that total. If total is not specified, the sum of all points in the wildcard series will be used instead.<para/>
-        /// The total parameter may be a single series or a numeric value.
+        /// Calculates a percentage of the total of a wildcard series. If `total` is specified,
+        /// each series will be calculated as a percentage of that total. If `total` is not specified,
+        /// the sum of all points in the wildcard series will be used instead.
         /// </summary>
         public SeriesListFunction AsPercent(int total)
         {
             return Binary("asPercent", total);
-        }
-        
-        /// <summary>
-        /// Takes one metric or a wildcard seriesList followed by an integer N. Out of all metrics passed, draws only the metrics with an average value above N for the time period specified.
-        /// </summary>
-        public SeriesListFunction AverageAbove(double minimum)
-        {
-            return Binary("averageAbove", minimum.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Takes one metric or a wildcard seriesList followed by an integer N. Out of all metrics passed, draws only the metrics with an average value below N for the time period specified.
-        /// </summary>
-        public SeriesListFunction AverageBelow(double maximum)
-        {
-            return Binary("averageBelow", maximum.ToString("r", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -129,81 +113,12 @@ namespace ahd.Graphite.Base
         }
 
         /// <summary>
-        /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a maximum value above n.
-        /// </summary>
-        public SeriesListFunction MaximumAbove(double value)
-        {
-            return Binary("maximumAbove", value.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a maximum value below n.
-        /// </summary>
-        public SeriesListFunction MaximumBelow(double value)
-        {
-            return Binary("maximumBelow", value.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a minimum value above n.
-        /// </summary>
-        public SeriesListFunction MinimumAbove(double value)
-        {
-            return Binary("minimumAbove", value.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Takes one metric or a wildcard seriesList followed by a constant n. Draws only the metrics with a minimum value below n.
-        /// </summary>
-        public SeriesListFunction MinimumBelow(double value)
-        {
-            return Binary("minimumBelow", value.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Removes data above the given threshold from the series or list of series provided. Values above this threshold are assigned a value of None.
-        /// </summary>
-        public SeriesListFunction RemoveAboveValue(double percentile)
-        {
-            return Binary("removeAboveValue", percentile.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Removes data below the given threshold from the series or list of series provided. Values below this threshold are assigned a value of None.
-        /// </summary>
-        public SeriesListFunction RemoveBelowValue(double percentile)
-        {
-            return Binary("removeBelowValue", percentile.ToString("r", CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// Takes one metric or a wildcard seriesList. Out of all metrics passed, draws only the metrics with not empty data
-        /// </summary>
-        public SeriesListFunction RemoveEmptySeries()
-        {
-            return Unary("removeEmptySeries");
-        }
-
-        /// <summary>
         /// Smarter version of summarize.
         /// </summary>
         public SeriesListFunction SmartSummarize(string interval, Func<SeriesListBase, Func<SeriesListFunction>> callback)
         {
             var func = callback(new GraphitePath("unused")).Invoke();
             return Ternary("smartSummarize", SingleQuote(interval), SingleQuote(func.FunctionName));
-        }
-
-        /// <summary>
-        /// Compares the maximum of each series against the given value. If the series maximum is greater than <paramref name="value"/>, the regular expression search and replace is applied against the series name to plot a related metric<para/>
-        /// e. g. given useSeriesAbove(ganglia.metric1.reqs,10,’reqs’,’time’), the response time metric will be plotted only when the maximum value of the corresponding request/s metric is > 10
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="search"></param>
-        /// <param name="replace"></param>
-        /// <returns></returns>
-        public SeriesListFunction UseSeriesAbove(double value, string search, string replace)
-        {
-            return new SeriesListFunction("useSeriesAbove", this, value.ToString("r", CultureInfo.InvariantCulture), SingleQuote(search), SingleQuote(replace));
         }
         
         /// <summary>

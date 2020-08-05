@@ -782,6 +782,20 @@ namespace ahd.Graphite.Test
         }
 
         [Fact]
+        public void Sin()
+        {
+            var series = new SinSeriesList("The.time.series", 2);
+            Assert.Equal("sin('The.time.series',2)", series.ToString());
+        }
+
+        [Fact]
+        public void SeriesByTag()
+        {
+            var series = new SeriesByTagSeriesList("tag1=value1", "tag2!=value2");
+            Assert.Equal("seriesByTag('tag1=value1','tag2!=value2')", series.ToString());
+        }
+
+        [Fact]
         public void Function()
         {
 #pragma warning disable 618
