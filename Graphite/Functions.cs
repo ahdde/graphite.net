@@ -892,6 +892,27 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Short Alias: avg()
+		/// <para>
+		/// Takes one metric or a wildcard seriesList.
+		/// Draws the average value of all metrics passed at each time.
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=averageSeries(company.server.*.threads.busy)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``average``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction AverageSeries()
+		{
+			return Unary("averageSeries");
+		}
+
+		/// <summary>
 		/// Call averageSeries after inserting wildcards at the given position(s).
 		/// <para>
 		/// Example:
@@ -956,6 +977,27 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction Avg(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("avg", seriesLists);
+		}
+
+		/// <summary>
+		/// Short Alias: avg()
+		/// <para>
+		/// Takes one metric or a wildcard seriesList.
+		/// Draws the average value of all metrics passed at each time.
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=averageSeries(company.server.*.threads.busy)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``average``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction Avg()
+		{
+			return Unary("avg");
 		}
 
 		/// <summary>
@@ -1112,6 +1154,17 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction CountSeries(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("countSeries", seriesLists);
+		}
+
+		/// <summary>
+		/// Draws a horizontal line representing the number of nodes found in the seriesList.
+		/// <code>
+		///   &amp;target=countSeries(carbon.agents.*.*)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction CountSeries()
+		{
+			return Unary("countSeries");
 		}
 
 		/// <summary>
@@ -1288,6 +1341,36 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction DiffSeries(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("diffSeries", seriesLists);
+		}
+
+		/// <summary>
+		/// Subtracts series 2 through n from series 1.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=diffSeries(service.connections.total,service.connections.failed)
+		/// </code>
+		/// <para>
+		/// To diff a series and a constant, one should use offset instead of (or in
+		/// addition to) diffSeries
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=offset(service.connections.total,-5)
+		/// </code>
+		/// <para>
+		///   &amp;target=offset(diffSeries(service.connections.total,service.connections.failed),-4)
+		/// </para>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``diff``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction DiffSeries()
+		{
+			return Unary("diffSeries");
 		}
 
 		/// <summary>
@@ -1473,6 +1556,15 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction Group(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("group", seriesLists);
+		}
+
+		/// <summary>
+		/// Takes an arbitrary number of seriesLists and adds them to a single seriesList. This is used
+		/// to pass multiple seriesLists to a function which only takes one
+		/// </summary>
+		public SeriesListFunction Group()
+		{
+			return Unary("group");
 		}
 
 		/// <summary>
@@ -2453,6 +2545,24 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Takes one metric or a wildcard seriesList.
+		/// For each datapoint from each metric passed in, pick the maximum value and graph it.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=maxSeries(Server*.connections.total)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``max``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction MaxSeries()
+		{
+			return Unary("maxSeries");
+		}
+
+		/// <summary>
 		/// Takes one metric or a wildcard seriesList followed by a constant n.
 		/// Draws only the metrics with a minimum value above n.
 		/// <para>
@@ -2520,6 +2630,24 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction MinSeries(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("minSeries", seriesLists);
+		}
+
+		/// <summary>
+		/// Takes one metric or a wildcard seriesList.
+		/// For each datapoint from each metric passed in, pick the minimum value and graph it.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=minSeries(Server*.connections.total)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``min``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction MinSeries()
+		{
+			return Unary("minSeries");
 		}
 
 		/// <summary>
@@ -3035,6 +3163,24 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction MultiplySeries(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("multiplySeries", seriesLists);
+		}
+
+		/// <summary>
+		/// Takes two or more series and multiplies their points. A constant may not be
+		/// used. To multiply by a constant, use the scale() function.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=multiplySeries(Series.dividends,Series.divisors)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``multiply``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction MultiplySeries()
+		{
+			return Unary("multiplySeries");
 		}
 
 		/// <summary>
@@ -3597,6 +3743,21 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Takes two or more series and pows their points. A constant line may be
+		/// used.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=powSeries(Server.instance01.app.requests, Server.instance01.app.replies)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction PowSeries()
+		{
+			return Unary("powSeries");
+		}
+
+		/// <summary>
 		/// Takes a wildcard seriesList.
 		/// Distills down a set of inputs into the range of the series
 		/// <para>
@@ -3612,6 +3773,24 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction RangeOfSeries(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("rangeOfSeries", seriesLists);
+		}
+
+		/// <summary>
+		/// Takes a wildcard seriesList.
+		/// Distills down a set of inputs into the range of the series
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///     &amp;target=rangeOfSeries(Server*.connections.total)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``rangeOf``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction RangeOfSeries()
+		{
+			return Unary("rangeOfSeries");
 		}
 
 		/// <summary>
@@ -4060,6 +4239,24 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Takes one metric or a wildcard seriesList.
+		/// Draws the standard deviation of all metrics passed at each time.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=stddevSeries(company.server.*.threads.busy)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``stddev``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction StddevSeries()
+		{
+			return Unary("stddevSeries");
+		}
+
+		/// <summary>
 		/// Takes one metric or a wildcard seriesList followed by an integer N.
 		/// Draw the Standard Deviation of all metrics passed for the past N datapoints.
 		/// If the ratio of null points in the window is greater than windowTolerance,
@@ -4187,6 +4384,33 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction Sum(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("sum", seriesLists);
+		}
+
+		/// <summary>
+		/// Short form: sum()
+		/// <para>
+		/// This will add metrics together and return the sum at each datapoint. (See
+		/// integral for a sum over time)
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=sum(company.server.application*.requestsHandled)
+		/// </code>
+		/// <para>
+		/// This would show the sum of all requests handled per minute (provided
+		/// requestsHandled are collected once a minute).   If metrics with different
+		/// retention rates are combined, the coarsest metric is graphed, and the sum
+		/// of the other metrics is averaged for the metrics with finer retention rates.
+		/// </para>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``sum``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction Sum()
+		{
+			return Unary("sum");
 		}
 
 		/// <summary>
@@ -4337,6 +4561,33 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction SumSeries(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("sumSeries", seriesLists);
+		}
+
+		/// <summary>
+		/// Short form: sum()
+		/// <para>
+		/// This will add metrics together and return the sum at each datapoint. (See
+		/// integral for a sum over time)
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=sum(company.server.application*.requestsHandled)
+		/// </code>
+		/// <para>
+		/// This would show the sum of all requests handled per minute (provided
+		/// requestsHandled are collected once a minute).   If metrics with different
+		/// retention rates are combined, the coarsest metric is graphed, and the sum
+		/// of the other metrics is averaged for the metrics with finer retention rates.
+		/// </para>
+		/// <para>
+		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``sum``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction SumSeries()
+		{
+			return Unary("sumSeries");
 		}
 
 		/// <summary>
@@ -4722,6 +4973,23 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction Unique(params SeriesListBase[] seriesLists)
 		{
 			return Multiple("unique", seriesLists);
+		}
+
+		/// <summary>
+		/// Takes an arbitrary number of seriesLists and returns unique series, filtered by name.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=unique(mostDeviant(server.*.disk_free,5),lowestCurrent(server.*.disk_free,5))
+		/// </code>
+		/// <para>
+		/// Draws servers with low disk space, and servers with highly deviant disk space, but never the same series twice.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction Unique()
+		{
+			return Unary("unique");
 		}
 
 		/// <summary>

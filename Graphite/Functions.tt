@@ -74,6 +74,14 @@ private static IEnumerable<JFunction> OptionalOverloads(JFunction function)
 		yield return function;
 		node = node.DeepClone();
 	}
+	if (function.Parameter.Count == 1 && function.Parameter[function.Parameter.Count -1].Multiple)
+    {
+		var parameters = (JArray)node["params"];
+		var parameter = parameters[0];
+		var multiple = parameter["multiple"];
+		multiple.Parent.Remove();
+		yield return new JFunction(function.GraphiteName, node);
+	}
 }
 private static IEnumerable<JFunction> Overloads(JFunction function)
 {
