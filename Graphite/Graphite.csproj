@@ -5,7 +5,8 @@
     <RootNamespace>ahd.Graphite</RootNamespace>
     <AssemblyName>ahd.Graphite</AssemblyName>
     <Title>Graphite client</Title>
-    <Version>3.0.0</Version>
+    <VersionPrefix>3.0.0</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>ahd GmbH &amp; Co. KG</Authors>
     <Company>ahd GmbH &amp; Co. KG</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
