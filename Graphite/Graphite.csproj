@@ -18,6 +18,8 @@
     <Copyright>Copyright 2018</Copyright>
     <Description>client implementation for sending and retrieving values from and to any graphite server.</Description>
     <Product>Graphite</Product>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>graphite.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
