@@ -10,8 +10,9 @@
     <Company>ahd GmbH &amp; Co. KG</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/ahdde/graphite.net</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.github.com/ahdde/graphite.net/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIconUrl>https://raw.github.com/ahdde/graphite.net/master/icon.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/ahdde/graphite.net.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>graphite pickle metric tsdb</PackageTags>
@@ -32,6 +33,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="Functions.cs">
