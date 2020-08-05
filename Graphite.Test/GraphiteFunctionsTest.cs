@@ -221,14 +221,14 @@ namespace ahd.Graphite.Test
         [Fact]
         public void GroupByNode()
         {
-            var series = _series.GroupByNode(2, (x,y) => x.Sum(y));
+            var series = _series.GroupByNode(2, x => x.Sum);
             Assert.Equal("groupByNode(metric,2,'sum')", series.ToString());
         }
 
         [Fact]
         public void GroupByNodes()
         {
-            var series = _series.GroupByNodes((x,y) => x.Sum(y), 1, 4);
+            var series = _series.GroupByNodes(x => x.Sum, 1, 4);
             Assert.Equal("groupByNodes(metric,'sum',1,4)", series.ToString());
         }
 
@@ -614,7 +614,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public void SmartSummarize()
         {
-            var series = _series.SmartSummarize("1day", (x,y) => x.Sum(y));
+            var series = _series.SmartSummarize("1day", x => x.Sum);
             Assert.Equal("smartSummarize(metric,'1day','sum')", series.ToString());
         }
 

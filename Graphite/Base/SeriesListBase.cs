@@ -113,18 +113,18 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Takes a serieslist and maps a callback to subgroups within as defined by a common node
         /// </summary>
-        public SeriesListFunction GroupByNode(int node, Func<SeriesListBase, SeriesListBase[], SeriesListFunction> callback)
+        public SeriesListFunction GroupByNode(uint node, Func<SeriesListBase, Func<SeriesListFunction>> callback)
         {
-            var result = callback(new GraphitePath("unused"), null);
+            var result = callback(new GraphitePath("unused")).Invoke();
             return Ternary("groupByNode", node, SingleQuote(result.FunctionName));
         }
 
         /// <summary>
         /// Takes a serieslist and maps a callback to subgroups within as defined by multiple nodes
         /// </summary>
-        public SeriesListFunction GroupByNodes(Func<SeriesListBase, SeriesListBase[], SeriesListFunction> callback, params int[] nodes)
+        public SeriesListFunction GroupByNodes(Func<SeriesListBase, Func<SeriesListFunction>> callback, params int[] nodes)
         {
-            var result = callback(new GraphitePath("unused"), null);
+            var result = callback(new GraphitePath("unused")).Invoke();
             return new SeriesListFunction("groupByNodes", Merge(this, Merge(SingleQuote(result.FunctionName), nodes)));
         }
 
@@ -187,9 +187,9 @@ namespace ahd.Graphite.Base
         /// <summary>
         /// Smarter version of summarize.
         /// </summary>
-        public SeriesListFunction SmartSummarize(string interval, Func<SeriesListBase, SeriesListBase[], SeriesListFunction> callback)
+        public SeriesListFunction SmartSummarize(string interval, Func<SeriesListBase, Func<SeriesListFunction>> callback)
         {
-            var func = callback(new GraphitePath("unused"), null);
+            var func = callback(new GraphitePath("unused")).Invoke();
             return Ternary("smartSummarize", SingleQuote(interval), SingleQuote(func.FunctionName));
         }
 
