@@ -19,7 +19,10 @@ namespace ahd.Graphite.Base
             return Merge(value, Array.ConvertAll<T, object>(values, x => x));
         }
 
-        private static object[] Merge(object value, params object[] values)
+        /// <summary>
+        /// merge parameter
+        /// </summary>
+        protected static object[] Merge(object value, params object[] values)
         {
             if (values.Length == 0) return new[] {value};
             var parameter = new List<object> {value};
@@ -27,7 +30,10 @@ namespace ahd.Graphite.Base
             return parameter.ToArray();
         }
         
-        private static string SingleQuote(string value)
+        /// <summary>
+        /// add single quotes
+        /// </summary>
+        protected static string SingleQuote(string value)
         {
             if (value is null) return null;
             return $"'{value}'";
