@@ -557,8 +557,8 @@ class JParameter
 				return Name;
 			case "float":
 				if (Required || HasDefault)
-					return $"{Name}.ToString(\"r\", CultureInfo.InvariantCulture)";
-				return $"{Name}?.ToString(\"r\", CultureInfo.InvariantCulture)";
+					return $"{Name}.ToString(\"G17\", CultureInfo.InvariantCulture)";
+				return $"{Name}?.ToString(\"G17\", CultureInfo.InvariantCulture)";
 			default:
 				return "broken";
 		}
