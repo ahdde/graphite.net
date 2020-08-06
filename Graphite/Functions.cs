@@ -32,6 +32,22 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Takes one metric or a wildcard seriesList followed by a constant, and adds the
+		/// constant to each datapoint. Also works for negative numbers.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=add(Server.instance01.threads.busy, 10)
+		///   &amp;target=add(Server.instance*.threads.busy, 10)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction Add(double constant)
+		{
+			return Binary("add", constant.ToString("r", CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>
 		/// Aggregate series using the specified function.
 		/// <para>
 		/// Example:
@@ -46,8 +62,9 @@ namespace ahd.Graphite.Base
 		///   &amp;target=sumSeries(host.cpu-[0-7].cpu-{user,system}.value)
 		/// </code>
 		/// <para>
-		/// This function can be used with aggregation functions ``average``, ``median``, ``sum``, ``min``,
-		/// ``max``, ``diff``, ``stddev``, ``count``, ``range``, ``multiply`` &amp; ``last``.
+		/// This function can be used with aggregation functions ``average`` (or ``avg``), ``avg_zero``,
+		/// ``median``, ``sum`` (or ``total``), ``min``, ``max``, ``diff``, ``stddev``, ``count``,
+		/// ``range`` (or ``rangeOf``) , ``multiply`` &amp; ``last`` (or ``current``).
 		/// </para>
 		/// </summary>
 		public SeriesListFunction Aggregate(string func, double? xFilesFactor = null)
@@ -70,8 +87,9 @@ namespace ahd.Graphite.Base
 		///   &amp;target=sumSeries(host.cpu-[0-7].cpu-{user,system}.value)
 		/// </code>
 		/// <para>
-		/// This function can be used with aggregation functions ``average``, ``median``, ``sum``, ``min``,
-		/// ``max``, ``diff``, ``stddev``, ``count``, ``range``, ``multiply`` &amp; ``last``.
+		/// This function can be used with aggregation functions ``average`` (or ``avg``), ``avg_zero``,
+		/// ``median``, ``sum`` (or ``total``), ``min``, ``max``, ``diff``, ``stddev``, ``count``,
+		/// ``range`` (or ``rangeOf``) , ``multiply`` &amp; ``last`` (or ``current``).
 		/// </para>
 		/// </summary>
 		public SeriesListFunction Aggregate(string func)
@@ -563,7 +581,7 @@ namespace ahd.Graphite.Base
 		///   series will increase reliability.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction AsPercent(SeriesListBase total = null, params uint[] nodes)
+		public SeriesListFunction AsPercent(object total = null, params uint[] nodes)
 		{
 			return new SeriesListFunction("asPercent", Merge(this, Merge(total, nodes)));
 		}
@@ -644,7 +662,7 @@ namespace ahd.Graphite.Base
 		///   series will increase reliability.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction AsPercent(SeriesListBase total = null, params string[] nodes)
+		public SeriesListFunction AsPercent(object total = null, params string[] nodes)
 		{
 			return new SeriesListFunction("asPercent", Merge(this, Merge(total, nodes.Select(SingleQuote).ToArray())));
 		}
@@ -725,7 +743,7 @@ namespace ahd.Graphite.Base
 		///   series will increase reliability.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction AsPercent(SeriesListBase total = null)
+		public SeriesListFunction AsPercent(object total = null)
 		{
 			return Binary("asPercent", total);
 		}
@@ -812,7 +830,7 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Takes one metric or a wildcard seriesList followed by an integer N.
+		/// Takes one metric or a wildcard seriesList followed by a constant N.
 		/// Out of all metrics passed, draws only the metrics with an average value
 		/// above N for the time period specified.
 		/// <para>
@@ -825,13 +843,13 @@ namespace ahd.Graphite.Base
 		/// Draws the servers with average values above 25.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction AverageAbove(int n)
+		public SeriesListFunction AverageAbove(double n)
 		{
-			return Binary("averageAbove", n);
+			return Binary("averageAbove", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
-		/// Takes one metric or a wildcard seriesList followed by an integer N.
+		/// Takes one metric or a wildcard seriesList followed by a constant N.
 		/// Out of all metrics passed, draws only the metrics with an average value
 		/// below N for the time period specified.
 		/// <para>
@@ -844,17 +862,17 @@ namespace ahd.Graphite.Base
 		/// Draws the servers with average values below 25.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction AverageBelow(int n)
+		public SeriesListFunction AverageBelow(double n)
 		{
-			return Binary("averageBelow", n);
+			return Binary("averageBelow", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// Removes series lying inside an average percentile interval
 		/// </summary>
-		public SeriesListFunction AverageOutsidePercentile(int n)
+		public SeriesListFunction AverageOutsidePercentile(double n)
 		{
-			return Binary("averageOutsidePercentile", n);
+			return Binary("averageOutsidePercentile", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -1112,7 +1130,7 @@ namespace ahd.Graphite.Base
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList and a consolidation function name.
 		/// <para>
-		/// Valid function names are 'sum', 'average', 'min', 'max', 'first' &amp; 'last'.
+		/// Valid function names are 'sum', 'average'/'avg', 'min', 'max', 'first' &amp; 'last'.
 		/// </para>
 		/// <para>
 		/// When a graph is drawn where width of the graph size in pixels is smaller than
@@ -1177,7 +1195,7 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Takes one metric or a wildcard seriesList followed by an integer N.
+		/// Takes one metric or a wildcard seriesList followed by a constant N.
 		/// Out of all metrics passed, draws only the  metrics whose value is above N
 		/// at the end of the time period specified.
 		/// <para>
@@ -1190,13 +1208,13 @@ namespace ahd.Graphite.Base
 		/// Draws the servers with more than 50 busy threads.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction CurrentAbove(int n)
+		public SeriesListFunction CurrentAbove(double n)
 		{
-			return Binary("currentAbove", n);
+			return Binary("currentAbove", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
-		/// Takes one metric or a wildcard seriesList followed by an integer N.
+		/// Takes one metric or a wildcard seriesList followed by a constant N.
 		/// Out of all metrics passed, draws only the  metrics whose value is below N
 		/// at the end of the time period specified.
 		/// <para>
@@ -1209,9 +1227,9 @@ namespace ahd.Graphite.Base
 		/// Draws the servers with less than 3 busy threads.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction CurrentBelow(int n)
+		public SeriesListFunction CurrentBelow(double n)
 		{
-			return Binary("currentBelow", n);
+			return Binary("currentBelow", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -1423,6 +1441,21 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Raise e to the power of the datapoint,
+		/// where e = 2.718281... is the base of natural logarithms.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///     &amp;target=exp(Server.instance01.threads.busy)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction Exp()
+		{
+			return Unary("exp");
+		}
+
+		/// <summary>
 		/// Takes a series of values and a window size and produces an exponential moving
 		/// average utilizing the following formula:
 		/// <code>
@@ -1603,6 +1636,30 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Takes a serieslist and maps a callback to subgroups within as defined by a common node
+		/// <code>
+		///   &amp;target=groupByNode(ganglia.by-function.*.*.cpu.load5,2,"sumSeries")
+		/// </code>
+		/// <para>
+		/// Would return multiple series which are each the result of applying the "sumSeries" function
+		/// to groups joined on the second node (0 indexed) resulting in a list of targets like
+		/// </para>
+		/// <code>
+		///   sumSeries(ganglia.by-function.server1.*.cpu.load5),sumSeries(ganglia.by-function.server2.*.cpu.load5),...
+		/// </code>
+		/// <para>
+		/// Node may be an integer referencing a node in the series name or a string identifying a tag.
+		/// </para>
+		/// <para>
+		/// This is an alias for using :py:func:`groupByNodes &lt;groupByNodes&gt;` with a single node.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction GroupByNode(string nodeNum)
+		{
+			return Binary("groupByNode", SingleQuote(nodeNum));
+		}
+
+		/// <summary>
 		/// Takes a serieslist and maps a callback to subgroups within as defined by multiple nodes
 		/// <code>
 		///   &amp;target=groupByNodes(ganglia.server*.*.cpu.load*,"sum",1,4)
@@ -1688,8 +1745,9 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
-		/// ``stddev``, ``range`` &amp; ``multiply``.
+		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average`` (or ``avg``), ``avg_zero``,
+		/// ``median``, ``sum`` (or ``total``), ``min``, ``max``, ``diff``, ``stddev``, ``count``,
+		/// ``range`` (or ``rangeOf``) , ``multiply`` &amp; ``last`` (or ``current``).
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByTags(string callback, params string[] tags)
@@ -2167,7 +2225,7 @@ namespace ahd.Graphite.Base
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
 		/// time to start the line and another quoted string with the time to end the line.
 		/// The start and end times are inclusive (default range is from to until). See
-		/// ``from / until`` in the render\_api_ for examples of time formats. Datapoints
+		/// ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats. Datapoints
 		/// in the range is used to regression.
 		/// </para>
 		/// <para>
@@ -2189,7 +2247,7 @@ namespace ahd.Graphite.Base
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
 		/// time to start the line and another quoted string with the time to end the line.
 		/// The start and end times are inclusive (default range is from to until). See
-		/// ``from / until`` in the render\_api_ for examples of time formats. Datapoints
+		/// ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats. Datapoints
 		/// in the range is used to regression.
 		/// </para>
 		/// <para>
@@ -2211,7 +2269,7 @@ namespace ahd.Graphite.Base
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
 		/// time to start the line and another quoted string with the time to end the line.
 		/// The start and end times are inclusive (default range is from to until). See
-		/// ``from / until`` in the render\_api_ for examples of time formats. Datapoints
+		/// ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats. Datapoints
 		/// in the range is used to regression.
 		/// </para>
 		/// <para>
@@ -2277,6 +2335,22 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction Log()
 		{
 			return Unary("log");
+		}
+
+		/// <summary>
+		/// Takes one metric or a wildcard seriesList and applies the logit
+		/// function `log(x / (1 - x))` to each datapoint.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=logit(Server.instance01.threads.busy)
+		///   &amp;target=logit(Server.instance*.threads.busy)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction Logit()
+		{
+			return Unary("logit");
 		}
 
 		/// <summary>
@@ -2490,9 +2564,9 @@ namespace ahd.Graphite.Base
 		/// This would only display interfaces which sent more than 1000 packets/min.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction MaximumAbove(int n)
+		public SeriesListFunction MaximumAbove(double n)
 		{
-			return Binary("maximumAbove", n);
+			return Binary("maximumAbove", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -2508,9 +2582,9 @@ namespace ahd.Graphite.Base
 		/// This would only display interfaces which sent less than 1000 packets/min.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction MaximumBelow(int n)
+		public SeriesListFunction MaximumBelow(double n)
 		{
-			return Binary("maximumBelow", n);
+			return Binary("maximumBelow", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -2562,14 +2636,14 @@ namespace ahd.Graphite.Base
 		/// This would only display interfaces which sent more than 1000 packets/min.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction MinimumAbove(int n)
+		public SeriesListFunction MinimumAbove(double n)
 		{
-			return Binary("minimumAbove", n);
+			return Binary("minimumAbove", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList followed by a constant n.
-		/// Draws only the metrics with a minimum value below n.
+		/// Draws only the metrics with a minimum value below or equal to n.
 		/// <para>
 		/// Example:
 		/// </para>
@@ -2580,9 +2654,9 @@ namespace ahd.Graphite.Base
 		/// This would only display interfaces which at one point sent less than 1000 packets/min.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction MinimumBelow(int n)
+		public SeriesListFunction MinimumBelow(double n)
 		{
-			return Binary("minimumBelow", n);
+			return Binary("minimumBelow", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -2663,7 +2737,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// average of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2686,7 +2760,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// average of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2709,7 +2783,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// average of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2732,7 +2806,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// maximum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2755,7 +2829,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// maximum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2778,7 +2852,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// maximum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2801,7 +2875,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// median of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2824,7 +2898,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// median of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2847,7 +2921,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// median of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2870,7 +2944,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// minimum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2893,7 +2967,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// minimum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2916,7 +2990,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// minimum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2939,7 +3013,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// sum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2962,7 +3036,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// sum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -2985,7 +3059,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList followed by a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), and an xFilesFactor value to specify
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), and an xFilesFactor value to specify
 		/// how many points in the window must be non-null for the output to be considered valid. Graphs the
 		/// sum of the preceeding datapoints for each point on the graph.
 		/// </para>
@@ -3008,7 +3082,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList, a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), a function to apply to the points
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), a function to apply to the points
 		/// in the window to produce the output, and an xFilesFactor value to specify how many points in the
 		/// window must be non-null for the output to be considered valid. Graphs the
 		/// output of the function for the preceeding datapoints for each point on the graph.
@@ -3041,7 +3115,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList, a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), a function to apply to the points
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), a function to apply to the points
 		/// in the window to produce the output, and an xFilesFactor value to specify how many points in the
 		/// window must be non-null for the output to be considered valid. Graphs the
 		/// output of the function for the preceeding datapoints for each point on the graph.
@@ -3074,7 +3148,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList, a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), a function to apply to the points
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), a function to apply to the points
 		/// in the window to produce the output, and an xFilesFactor value to specify how many points in the
 		/// window must be non-null for the output to be considered valid. Graphs the
 		/// output of the function for the preceeding datapoints for each point on the graph.
@@ -3107,7 +3181,7 @@ namespace ahd.Graphite.Base
 		/// <para>
 		/// Takes one metric or a wildcard seriesList, a number N of datapoints
 		/// or a quoted string with a length of time like '1hour' or '5min' (See ``from /
-		/// until`` in the render\_api_ for examples of time formats), a function to apply to the points
+		/// until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats), a function to apply to the points
 		/// in the window to produce the output, and an xFilesFactor value to specify how many points in the
 		/// window must be non-null for the output to be considered valid. Graphs the
 		/// output of the function for the preceeding datapoints for each point on the graph.
@@ -3222,6 +3296,35 @@ namespace ahd.Graphite.Base
 		/// reset. (Such as if a network interface is destroyed and recreated by unloading
 		/// and re-loading a kernel module, common with USB / WiFi cards.
 		/// <para>
+		/// By default, a null value is returned in place of negative datapoints. When
+		/// ``maxValue`` is supplied, the missing value is computed as if the counter
+		/// had wrapped at ``maxValue``. When ``minValue`` is supplied, the missing
+		/// value is computed as if the counter had wrapped to ``minValue``.
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=nonNegativederivative(company.server.application01.ifconfig.TXPackets)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction NonNegativeDerivative(double? maxValue = null, double? minValue = null)
+		{
+			return Ternary("nonNegativeDerivative", maxValue?.ToString("r", CultureInfo.InvariantCulture), minValue?.ToString("r", CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>
+		/// Same as the derivative function above, but ignores datapoints that trend
+		/// down.  Useful for counters that increase for a long time, then wrap or
+		/// reset. (Such as if a network interface is destroyed and recreated by unloading
+		/// and re-loading a kernel module, common with USB / WiFi cards.
+		/// <para>
+		/// By default, a null value is returned in place of negative datapoints. When
+		/// ``maxValue`` is supplied, the missing value is computed as if the counter
+		/// had wrapped at ``maxValue``. When ``minValue`` is supplied, the missing
+		/// value is computed as if the counter had wrapped to ``minValue``.
+		/// </para>
+		/// <para>
 		/// Example:
 		/// </para>
 		/// <code>
@@ -3239,6 +3342,12 @@ namespace ahd.Graphite.Base
 		/// reset. (Such as if a network interface is destroyed and recreated by unloading
 		/// and re-loading a kernel module, common with USB / WiFi cards.
 		/// <para>
+		/// By default, a null value is returned in place of negative datapoints. When
+		/// ``maxValue`` is supplied, the missing value is computed as if the counter
+		/// had wrapped at ``maxValue``. When ``minValue`` is supplied, the missing
+		/// value is computed as if the counter had wrapped to ``minValue``.
+		/// </para>
+		/// <para>
 		/// Example:
 		/// </para>
 		/// <code>
@@ -3253,9 +3362,9 @@ namespace ahd.Graphite.Base
 		/// <summary>
 		/// Returns n-percent of each series in the seriesList.
 		/// </summary>
-		public SeriesListFunction NPercentile(int n)
+		public SeriesListFunction NPercentile(double n)
 		{
-			return Binary("nPercentile", n);
+			return Binary("nPercentile", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -3384,7 +3493,7 @@ namespace ahd.Graphite.Base
 		///   series will increase reliability.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction Pct(SeriesListBase total = null, params uint[] nodes)
+		public SeriesListFunction Pct(object total = null, params uint[] nodes)
 		{
 			return new SeriesListFunction("pct", Merge(this, Merge(total, nodes)));
 		}
@@ -3465,7 +3574,7 @@ namespace ahd.Graphite.Base
 		///   series will increase reliability.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction Pct(SeriesListBase total = null, params string[] nodes)
+		public SeriesListFunction Pct(object total = null, params string[] nodes)
 		{
 			return new SeriesListFunction("pct", Merge(this, Merge(total, nodes.Select(SingleQuote).ToArray())));
 		}
@@ -3546,7 +3655,7 @@ namespace ahd.Graphite.Base
 		///   series will increase reliability.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction Pct(SeriesListBase total = null)
+		public SeriesListFunction Pct(object total = null)
 		{
 			return Binary("pct", total);
 		}
@@ -3638,9 +3747,9 @@ namespace ahd.Graphite.Base
 		/// set to True, percentile values are actual values contained in one of the
 		/// supplied series.
 		/// </summary>
-		public SeriesListFunction PercentileOfSeries(int n, bool interpolate = false)
+		public SeriesListFunction PercentileOfSeries(double n, bool interpolate = false)
 		{
-			return Ternary("percentileOfSeries", n, interpolate?1:0);
+			return Ternary("percentileOfSeries", n.ToString("r", CultureInfo.InvariantCulture), interpolate?1:0);
 		}
 
 		/// <summary>
@@ -3649,15 +3758,45 @@ namespace ahd.Graphite.Base
 		/// set to True, percentile values are actual values contained in one of the
 		/// supplied series.
 		/// </summary>
-		public SeriesListFunction PercentileOfSeries(int n)
+		public SeriesListFunction PercentileOfSeries(double n)
 		{
-			return Binary("percentileOfSeries", n);
+			return Binary("percentileOfSeries", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// NonNegativeDerivative adjusted for the series time interval
 		/// This is useful for taking a running total metric and showing how many requests
 		/// per second were handled.
+		/// <para>
+		/// The optional ``minValue`` and ``maxValue`` parameters have the same
+		/// meaning as in ``nonNegativeDerivative``.
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=perSecond(company.server.application01.ifconfig.TXPackets)
+		/// </code>
+		/// <para>
+		/// Each time you run ifconfig, the RX and TXPackets are higher (assuming there
+		/// is network traffic.) By applying the perSecond function, you can get an
+		/// idea of the packets per second sent or received, even though you're only
+		/// recording the total.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction PerSecond(double? maxValue = null, double? minValue = null)
+		{
+			return Ternary("perSecond", maxValue?.ToString("r", CultureInfo.InvariantCulture), minValue?.ToString("r", CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>
+		/// NonNegativeDerivative adjusted for the series time interval
+		/// This is useful for taking a running total metric and showing how many requests
+		/// per second were handled.
+		/// <para>
+		/// The optional ``minValue`` and ``maxValue`` parameters have the same
+		/// meaning as in ``nonNegativeDerivative``.
+		/// </para>
 		/// <para>
 		/// Example:
 		/// </para>
@@ -3680,6 +3819,10 @@ namespace ahd.Graphite.Base
 		/// NonNegativeDerivative adjusted for the series time interval
 		/// This is useful for taking a running total metric and showing how many requests
 		/// per second were handled.
+		/// <para>
+		/// The optional ``minValue`` and ``maxValue`` parameters have the same
+		/// meaning as in ``nonNegativeDerivative``.
+		/// </para>
 		/// <para>
 		/// Example:
 		/// </para>
@@ -3784,44 +3927,44 @@ namespace ahd.Graphite.Base
 		/// Removes data above the nth percentile from the series or list of series provided.
 		/// Values above this percentile are assigned a value of None.
 		/// </summary>
-		public SeriesListFunction RemoveAbovePercentile(int n)
+		public SeriesListFunction RemoveAbovePercentile(double n)
 		{
-			return Binary("removeAbovePercentile", n);
+			return Binary("removeAbovePercentile", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// Removes data above the given threshold from the series or list of series provided.
 		/// Values above this threshold are assigned a value of None.
 		/// </summary>
-		public SeriesListFunction RemoveAboveValue(int n)
+		public SeriesListFunction RemoveAboveValue(double n)
 		{
-			return Binary("removeAboveValue", n);
+			return Binary("removeAboveValue", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// Removes data below the nth percentile from the series or list of series provided.
 		/// Values below this percentile are assigned a value of None.
 		/// </summary>
-		public SeriesListFunction RemoveBelowPercentile(int n)
+		public SeriesListFunction RemoveBelowPercentile(double n)
 		{
-			return Binary("removeBelowPercentile", n);
+			return Binary("removeBelowPercentile", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// Removes data below the given threshold from the series or list of series provided.
 		/// Values below this threshold are assigned a value of None.
 		/// </summary>
-		public SeriesListFunction RemoveBelowValue(int n)
+		public SeriesListFunction RemoveBelowValue(double n)
 		{
-			return Binary("removeBelowValue", n);
+			return Binary("removeBelowValue", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
 		/// Removes series that do not have an value lying in the x-percentile of all the values at a moment
 		/// </summary>
-		public SeriesListFunction RemoveBetweenPercentile(int n)
+		public SeriesListFunction RemoveBetweenPercentile(double n)
 		{
-			return Binary("removeBetweenPercentile", n);
+			return Binary("removeBetweenPercentile", n.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -3843,9 +3986,33 @@ namespace ahd.Graphite.Base
 		/// A setting of 0.5 means that at least half the values in the series must be non-null.
 		/// </para>
 		/// </summary>
-		public SeriesListFunction RemoveEmptySeries(double xFilesFactor)
+		public SeriesListFunction RemoveEmptySeries(double? xFilesFactor = null)
 		{
-			return Binary("removeEmptySeries", xFilesFactor.ToString("r", CultureInfo.InvariantCulture));
+			return Binary("removeEmptySeries", xFilesFactor?.ToString("r", CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>
+		/// Takes one metric or a wildcard seriesList.
+		/// Out of all metrics passed, draws only the metrics with not empty data
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=removeEmptySeries(server*.instance*.threads.busy)
+		/// </code>
+		/// <para>
+		/// Draws only live servers with not empty data.
+		/// </para>
+		/// <para>
+		/// `xFilesFactor` follows the same semantics as in Whisper storage schemas.  Setting it to 0 (the
+		/// default) means that only a single value in the series needs to be non-null for it to be
+		/// considered non-empty, setting it to 1 means that all values in the series must be non-null.
+		/// A setting of 0.5 means that at least half the values in the series must be non-null.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction RemoveEmptySeries()
+		{
+			return Unary("removeEmptySeries");
 		}
 
 		/// <summary>
@@ -3904,9 +4071,9 @@ namespace ahd.Graphite.Base
 		/// to normalize its result to a known resolution for arbitrary retentions
 		/// </para>
 		/// </summary>
-		public SeriesListFunction ScaleToSeconds(int seconds)
+		public SeriesListFunction ScaleToSeconds(double seconds)
 		{
-			return Binary("scaleToSeconds", seconds);
+			return Binary("scaleToSeconds", seconds.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -3953,6 +4120,22 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction SetXFilesFactor(double xFilesFactor)
 		{
 			return Binary("setXFilesFactor", xFilesFactor.ToString("r", CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>
+		/// Takes one metric or a wildcard seriesList and applies the sigmoid
+		/// function `1 / (1 + exp(-x))` to each datapoint.
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=sigmoid(Server.instance01.threads.busy)
+		///   &amp;target=sigmoid(Server.instance*.threads.busy)
+		/// </code>
+		/// </summary>
+		public SeriesListFunction Sigmoid()
+		{
+			return Unary("sigmoid");
 		}
 
 		/// <summary>
@@ -4625,7 +4808,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// <para>
 		/// Draws the selected metrics shifted in time. If no sign is given, a minus sign ( - ) is
 		/// implied which will shift the metric back in time. If a plus sign ( + ) is given, the
@@ -4663,7 +4846,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// <para>
 		/// Draws the selected metrics shifted in time. If no sign is given, a minus sign ( - ) is
 		/// implied which will shift the metric back in time. If a plus sign ( + ) is given, the
@@ -4701,7 +4884,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// <para>
 		/// Draws the selected metrics shifted in time. If no sign is given, a minus sign ( - ) is
 		/// implied which will shift the metric back in time. If a plus sign ( + ) is given, the
@@ -4740,7 +4923,7 @@ namespace ahd.Graphite.Base
 		/// <summary>
 		/// Takes one metric or a wildcard metric, followed by a quoted string with the
 		/// time to start the line and another quoted string with the time to end the line.
-		/// The start and end times are inclusive. See ``from / until`` in the render\_api_
+		/// The start and end times are inclusive. See ``from / until`` in the :doc:`Render API &lt;render_api&gt;`
 		/// for examples of time formats.
 		/// <para>
 		/// Useful for filtering out a part of a series of data from a wider range of
@@ -4762,7 +4945,7 @@ namespace ahd.Graphite.Base
 		/// <summary>
 		/// Takes one metric or a wildcard metric, followed by a quoted string with the
 		/// time to start the line and another quoted string with the time to end the line.
-		/// The start and end times are inclusive. See ``from / until`` in the render\_api_
+		/// The start and end times are inclusive. See ``from / until`` in the :doc:`Render API &lt;render_api&gt;`
 		/// for examples of time formats.
 		/// <para>
 		/// Useful for filtering out a part of a series of data from a wider range of
@@ -4783,7 +4966,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// Also takes a start multiplier and end multiplier for the length of time
 		/// <para>
 		/// create a seriesList which is composed the original metric series stacked with time shifts
@@ -4806,7 +4989,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// Also takes a start multiplier and end multiplier for the length of time
 		/// <para>
 		/// create a seriesList which is composed the original metric series stacked with time shifts
@@ -4829,7 +5012,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// Also takes a start multiplier and end multiplier for the length of time
 		/// <para>
 		/// create a seriesList which is composed the original metric series stacked with time shifts
@@ -4852,7 +5035,7 @@ namespace ahd.Graphite.Base
 
 		/// <summary>
 		/// Takes one metric or a wildcard seriesList, followed by a quoted string with the
-		/// length of time (See ``from / until`` in the render\_api_ for examples of time formats).
+		/// length of time (See ``from / until`` in the :doc:`Render API &lt;render_api&gt;` for examples of time formats).
 		/// Also takes a start multiplier and end multiplier for the length of time
 		/// <para>
 		/// create a seriesList which is composed the original metric series stacked with time shifts
@@ -4992,9 +5175,9 @@ namespace ahd.Graphite.Base
 		///   &amp;target=useSeriesAbove(ganglia.metric1.reqs,10,"reqs","time")
 		/// </code>
 		/// </summary>
-		public SeriesListFunction UseSeriesAbove(string value, string search, string replace)
+		public SeriesListFunction UseSeriesAbove(double value, string search, string replace)
 		{
-			return Quaternary("useSeriesAbove", SingleQuote(value), SingleQuote(search), SingleQuote(replace));
+			return Quaternary("useSeriesAbove", value.ToString("r", CultureInfo.InvariantCulture), SingleQuote(search), SingleQuote(replace));
 		}
 
 		/// <summary>
@@ -5897,7 +6080,7 @@ namespace ahd.Graphite.Functions
 
 	/// <summary>
 	/// Takes a float F, followed by a label (in double quotes) and a color.
-	/// (See ``bgcolor`` in the render\_api_ for valid color names &amp; formats.)
+	/// (See ``bgcolor`` in the :doc:`Render API &lt;render_api&gt;` for valid color names &amp; formats.)
 	/// <para>
 	/// Draws a horizontal line at value F across the graph.
 	/// </para>
@@ -5912,7 +6095,7 @@ namespace ahd.Graphite.Functions
 	{
 		/// <summary>
 		/// Takes a float F, followed by a label (in double quotes) and a color.
-		/// (See ``bgcolor`` in the render\_api_ for valid color names &amp; formats.)
+		/// (See ``bgcolor`` in the :doc:`Render API &lt;render_api&gt;` for valid color names &amp; formats.)
 		/// <para>
 		/// Draws a horizontal line at value F across the graph.
 		/// </para>
@@ -5930,7 +6113,7 @@ namespace ahd.Graphite.Functions
 
 		/// <summary>
 		/// Takes a float F, followed by a label (in double quotes) and a color.
-		/// (See ``bgcolor`` in the render\_api_ for valid color names &amp; formats.)
+		/// (See ``bgcolor`` in the :doc:`Render API &lt;render_api&gt;` for valid color names &amp; formats.)
 		/// <para>
 		/// Draws a horizontal line at value F across the graph.
 		/// </para>
@@ -5948,7 +6131,7 @@ namespace ahd.Graphite.Functions
 
 		/// <summary>
 		/// Takes a float F, followed by a label (in double quotes) and a color.
-		/// (See ``bgcolor`` in the render\_api_ for valid color names &amp; formats.)
+		/// (See ``bgcolor`` in the :doc:`Render API &lt;render_api&gt;` for valid color names &amp; formats.)
 		/// <para>
 		/// Draws a horizontal line at value F across the graph.
 		/// </para>

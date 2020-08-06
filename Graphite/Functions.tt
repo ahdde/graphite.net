@@ -16,7 +16,7 @@ var json = JObject.Parse(content);
 var functions = new List<JFunction>();
 foreach(var entry in json)
 {
-	functions.Add(new JFunction(entry));
+	functions.Add(new JFunction(entry.Value));
 }
 #>
 //------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ private static IEnumerable<JFunction> OptionalOverloads(JFunction function)
     {
 		var parameters = (JArray)node["params"];
 		parameters.RemoveAt(parameters.Count-1);
-		function = new JFunction(function.GraphiteName, node);
+		function = new JFunction(node);
 		yield return function;
 		node = node.DeepClone();
 	}
@@ -115,7 +115,7 @@ private static IEnumerable<JFunction> OptionalOverloads(JFunction function)
 		var parameter = parameters[0];
 		var multiple = parameter["multiple"];
 		multiple.Parent.Remove();
-		yield return new JFunction(function.GraphiteName, node);
+		yield return new JFunction(node);
 	}
 }
 private static IEnumerable<JFunction> Overloads(JFunction function)
@@ -128,14 +128,14 @@ private static IEnumerable<JFunction> Overloads(JFunction function)
 		{
 			ReplaceType(parameter, "nodeOrTag", "node");
 		}
-		yield return new JFunction(function.GraphiteName, node);
+		yield return new JFunction(node);
 		node = function.Token;
 		parameters = (JArray)node["params"];
 		foreach(var parameter in parameters)
 		{
 			ReplaceType(parameter, "nodeOrTag", "tag");
 		}
-		yield return new JFunction(function.GraphiteName, node);
+		yield return new JFunction(node);
 	}
 	else if (function.Parameter.Any(x=>x.Type == "intOrInterval"))
 	{
@@ -145,14 +145,14 @@ private static IEnumerable<JFunction> Overloads(JFunction function)
 		{
 			ReplaceType(parameter, "intOrInterval", "integer");
 		}
-		yield return new JFunction(function.GraphiteName, node);
+		yield return new JFunction(node);
 		node = function.Token;
 		parameters = (JArray)node["params"];
 		foreach(var parameter in parameters)
 		{
 			ReplaceType(parameter, "intOrInterval", "interval");
 		}
-		yield return new JFunction(function.GraphiteName, node);
+		yield return new JFunction(node);
 	}
 	else
     {
@@ -173,14 +173,10 @@ class JFunction
 {
 	private readonly JToken _jtoken;
 
-	public JFunction(KeyValuePair<string, JToken> function)
-		:this(function.Key, function.Value)
-	{
-	}
-	public JFunction(string name, JToken function)
+	public JFunction(JToken function)
 	{
 		_jtoken = function;
-		GraphiteName = name;
+		GraphiteName = _jtoken["name"]?.ToString();
 		Name = GraphiteName.First().ToString().ToUpper() + GraphiteName.Substring(1);
 		Description = _jtoken["description"]?.ToString();
 		LoadParameter();
@@ -453,6 +449,7 @@ class JParameter
 			case "string":
 			case "interval":
 			case "aggFunc":
+			case "aggOrSeriesFunc":
 				result.Append("string");
 				isReference = true;
 				break;
@@ -463,6 +460,7 @@ class JParameter
 				result.Append("double");
 				break;
 			case "integer":
+			case "intOrInf":
 				result.Append("int");
 				break;
 			case "node":
@@ -471,6 +469,10 @@ class JParameter
 			case "seriesList":
 			case "seriesLists":
 				result.Append("SeriesListBase");
+				isReference = true;
+				break;
+			case "any":
+				result.Append("object");
 				isReference = true;
 				break;
 			default:
@@ -493,13 +495,15 @@ class JParameter
 				case "string":
 				case "interval":
 				case "aggFunc":
+				case "aggOrSeriesFunc":
 					result.Append('"').Append(Default).Append('"');
 					break;
 				case "boolean":
 					result.Append(Default.ToLowerInvariant());
 					break;
 				case "integer":
-					if (Default == "INF")
+				case "intOrInf":
+					if (Default == "INF" || Default == "Infinity")
 						result.Append("Int32.MaxValue");
 					else
 						result.Append(Default);
@@ -525,6 +529,7 @@ class JParameter
 				case "seriesLists":
 				case "float":
 				case "date":
+				case "any":
 					result.Append(" = null");
 					break;
 				case "string":
@@ -547,13 +552,16 @@ class JParameter
 			case "string":
 			case "interval":
 			case "aggFunc":
+			case "aggOrSeriesFunc":
 				if (Multiple)
 					return $"{Name}.Select(SingleQuote).ToArray()";
 				return $"SingleQuote({Name})";
 			case "integer":
+			case "intOrInf":
 			case "node":
 			case "seriesList":
 			case "seriesLists":
+			case "any":
 				return Name;
 			case "float":
 				if (Required || HasDefault)
