@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System.Text.Json.Serialization;
 
 namespace ahd.Graphite
 {
@@ -20,15 +19,22 @@ namespace ahd.Graphite
         }
 
         /// <summary>
+        /// JSON Constructor
+        /// </summary>
+        public GraphiteMetricData()
+        {
+        }
+
+        /// <summary>
         /// Target name, as returned from graphite
         /// </summary>
-        [JsonProperty("target")]
-        public string Target { get; }
+        [JsonPropertyName("target")]
+        public string Target { get; set; }
 
         /// <summary>
         /// List of timestamped values as returned from graphite
         /// </summary>
-        [JsonProperty("datapoints")]
-        public MetricDatapoint[] Datapoints { get; }
+        [JsonPropertyName("datapoints")]
+        public MetricDatapoint[] Datapoints { get; set; }
     }
 }

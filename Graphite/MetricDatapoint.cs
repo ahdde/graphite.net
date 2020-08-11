@@ -1,5 +1,6 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ahd.Graphite
 {
@@ -10,15 +11,17 @@ namespace ahd.Graphite
     public class MetricDatapoint
     {
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        
+
         /// <summary>
         /// value of the datapoint
         /// </summary>
+        [JsonPropertyName("value")]
         public double? Value { get; }
 
         /// <summary>
         /// timestamp of the datapoint
         /// </summary>
+        [JsonPropertyName("timestamp")]
         public DateTime Timestamp
         {
             get { return Epoch.AddSeconds(UnixTimestamp); }
@@ -40,58 +43,43 @@ namespace ahd.Graphite
             UnixTimestamp = timestamp;
         }
 
-        internal class MetricDatapointConverter : JsonConverter
+        internal class MetricDatapointConverter : JsonConverter<MetricDatapoint>
         {
-            public override bool CanConvert(Type objectType)
+            public override MetricDatapoint Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                return typeof(MetricDatapoint).IsAssignableFrom(objectType);
-            }
+                var exception = new JsonException("Cannot deserialize MetricDatapoint");
+                if (reader.TokenType != JsonTokenType.StartArray || !reader.Read())
+                    throw exception;
 
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                if (reader.TokenType == JsonToken.StartArray)
+                double? value = null;
+                if (reader.TokenType != JsonTokenType.Number && reader.TokenType != JsonTokenType.Null)
                 {
-                    if (reader.Read())
-                    {
-                        double? value = null;
-                        switch (reader.TokenType)
-                        {
-                            case JsonToken.Float:
-                                value = (double?)reader.Value;
-                                break;
-                            case JsonToken.Integer:
-                                value = (double?)(long)reader.Value;
-                                break;
-                            case JsonToken.Null:
-                                value = null;
-                                break;
-                            default:
-                                throw new JsonSerializationException($"Unexpected Token {reader.TokenType}");
-                        }
-                        if (reader.Read() && reader.TokenType == JsonToken.Integer)
-                        {
-                            long timestamp = (long)reader.Value;
-                            if (reader.Read() && reader.TokenType == JsonToken.EndArray)
-                            {
-                                return new MetricDatapoint(value, timestamp);
-                            }
-                        }
-                    }
+                   
+                    throw new JsonException($"Unexpected Token {reader.TokenType}");
                 }
-                throw new JsonSerializationException("Cannot deserialize MetricDatapoint");
+                
+                if (reader.TryGetDouble(out var current))
+                    value = current;
+
+                if (!reader.Read() || !reader.TryGetDouble(out var timestamp) || !reader.Read() || reader.TokenType != JsonTokenType.EndArray)
+                    throw exception;
+
+                return new MetricDatapoint(value, (long) timestamp);
             }
 
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            public override void Write(Utf8JsonWriter writer, MetricDatapoint datapoint, JsonSerializerOptions options)
             {
-                var datapoint = value as MetricDatapoint;
                 if (datapoint == null)
                 {
-                    writer.WriteNull();
+                    writer.WriteNullValue();
                     return;
                 }
                 writer.WriteStartArray();
-                writer.WriteValue(datapoint.Value);
-                writer.WriteValue(datapoint.UnixTimestamp);
+                if (!datapoint.Value.HasValue)
+                    writer.WriteNullValue();
+                else
+                    writer.WriteNumberValue(datapoint.Value.Value);
+                writer.WriteNumberValue(datapoint.UnixTimestamp);
                 writer.WriteEndArray();
             }
         }

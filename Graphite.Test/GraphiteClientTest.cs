@@ -3,15 +3,16 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ahd.Graphite.Base;
-using Newtonsoft.Json;
+using ahd.Graphite.Exceptions;
 using Razorvine.Pickle;
 using Xunit;
-
 namespace ahd.Graphite.Test
 {
     public class GraphiteClientTest
@@ -22,6 +23,22 @@ namespace ahd.Graphite.Test
         public void CanCreateClient()
         {
             var client = new GraphiteClient();
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task CanSerialiseHttpContent()
+        {
+            var json = "{\"is_leaf\": \"0\", \"name\": \"pickled\", \"path\": \"usage.unittest.pickled.\"}";
+            var client = new HttpClient();
+            var response = await client.GetAsync("http://echo.jsontest.com/is_leaf/0/name/pickled/path/usage.unittest.pickled./");
+            await response.EnsureSuccessStatusCodeAsync();
+            var read = await response.Content.ReadAsAsync<GraphiteMetric>(CancellationToken.None);
+            var des = JsonSerializer.Deserialize<GraphiteMetric>(json);
+            Assert.Equal(des.Text, read.Text);
+            Assert.Equal(des.Expandable, read.Expandable);
+            Assert.Equal(des.Id, read.Id);
+            Assert.Equal(des.Leaf, read.Leaf);
         }
 
         [Fact]
@@ -296,7 +313,7 @@ namespace ahd.Graphite.Test
         public void CanDeserializeMetrics()
         {
             var json = "{\"is_leaf\": \"0\", \"name\": \"pickled\", \"path\": \"usage.unittest.pickled.\"}";
-            var metric = JsonConvert.DeserializeObject<GraphiteMetric>(json);
+            var metric = JsonSerializer.Deserialize<GraphiteMetric>(json);
             Assert.Equal("usage.unittest.pickled", metric.Id);
             Assert.Equal("pickled", metric.Text);
             Assert.False(metric.Leaf);
@@ -307,7 +324,7 @@ namespace ahd.Graphite.Test
         public void CanDeserializeMetricsData()
         {
             var json = "{\"target\": \"usage.unittest.cpu.count\", \"datapoints\": [[3.5, 1474716420], [null, 1474716480], [null, 1474716540], [0, 1474716600], [7.0, 1474716660], [null, 1474716720], [null, 1474716780]]}";
-            var data = JsonConvert.DeserializeObject<GraphiteMetricData>(json);
+            var data = JsonSerializer.Deserialize<GraphiteMetricData>(json);
             Assert.Equal("usage.unittest.cpu.count", data.Target);
             Assert.NotNull(data.Datapoints);
             Assert.Equal(7,data.Datapoints.Length);
@@ -321,16 +338,16 @@ namespace ahd.Graphite.Test
         public void CanSerialize()
         {
             var datapoint = new MetricDatapoint(null, 987654321);
-            var json = JsonConvert.SerializeObject(datapoint);
+            var json = JsonSerializer.Serialize(datapoint);
             Assert.Equal("[null,987654321]", json);
 
             var datapoint2 = new MetricDatapoint(5, 123456789);
-            json = JsonConvert.SerializeObject(datapoint2);
-            Assert.Equal("[5.0,123456789]", json);
+            json = JsonSerializer.Serialize(datapoint2);
+            Assert.Equal("[5,123456789]", json);
 
             var metricData = new GraphiteMetricData("unit.test", new[] { datapoint2, datapoint });
-            json = JsonConvert.SerializeObject(metricData);
-            Assert.Equal("{\"target\":\"unit.test\",\"datapoints\":[[5.0,123456789],[null,987654321]]}", json);
+            json = JsonSerializer.Serialize(metricData);
+            Assert.Equal("{\"target\":\"unit.test\",\"datapoints\":[[5,123456789],[null,987654321]]}", json);
         }
 
         [Fact]
