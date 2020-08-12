@@ -51,9 +51,9 @@ namespace ahd.Graphite
             if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException($"Can not deserialize {nameof(GraphiteMetric)}");
 
-            var path = "";
-            var is_leaf = "";
-            var name = "";
+            var path = string.Empty;
+            var is_leaf = string.Empty;
+            var name = string.Empty;
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType == JsonTokenType.PropertyName)
