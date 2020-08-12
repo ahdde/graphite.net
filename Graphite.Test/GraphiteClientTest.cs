@@ -321,6 +321,29 @@ namespace ahd.Graphite.Test
         }
 
         [Fact]
+        public void CanDeserializeMetricDatapoint()
+        {
+            var json = "[3.5, 1474716420]";
+            var dp = JsonSerializer.Deserialize<MetricDatapoint>(json);
+            Assert.Equal(3.5D, dp.Value);
+            Assert.Equal(1474716420L, dp.UnixTimestamp);
+
+            json = "[null, 1474716424]";
+            dp = JsonSerializer.Deserialize<MetricDatapoint>(json);
+            Assert.Null(dp.Value);
+            Assert.Equal(1474716424, dp.UnixTimestamp);
+        }
+
+        [Fact]
+        public void DeserializationThrowsOnIllegalJson()
+        {
+            var json = "{Test: 24, Array: [3.5, null]}";
+            Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<MetricDatapoint>(json));
+            Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<GraphiteMetric>(json));
+            Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<GraphiteMetricData>(json));
+        }
+
+        [Fact]
         public void CanDeserializeMetricsData()
         {
             var json = "{\"target\": \"usage.unittest.cpu.count\", \"datapoints\": [[3.5, 1474716420], [null, 1474716480], [null, 1474716540], [0, 1474716600], [7.0, 1474716660], [null, 1474716720], [null, 1474716780]]}";

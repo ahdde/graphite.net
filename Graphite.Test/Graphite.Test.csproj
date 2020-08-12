@@ -6,7 +6,7 @@
     <RootNamespace>ahd.Graphite.Test</RootNamespace>
     <AssemblyName>ahd.Graphite.Test</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>graphite.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\graphite.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

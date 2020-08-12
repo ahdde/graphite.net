@@ -48,9 +48,8 @@ namespace ahd.Graphite
     {
         public override GraphiteMetric Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var exception = new JsonException("Cannot deserialize GraphiteMetric");
             if (reader.TokenType != JsonTokenType.StartObject)
-                throw exception;
+                throw new JsonException($"Can not deserialize {nameof(GraphiteMetric)}");
 
             var path = "";
             var is_leaf = "";

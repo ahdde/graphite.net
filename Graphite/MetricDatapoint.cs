@@ -47,24 +47,26 @@ namespace ahd.Graphite
         {
             public override MetricDatapoint Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                var exception = new JsonException("Cannot deserialize MetricDatapoint");
                 if (reader.TokenType != JsonTokenType.StartArray || !reader.Read())
-                    throw exception;
+                    throw new JsonException($"Can not deserialize {nameof(MetricDatapoint)}, {nameof(JsonTokenType.StartArray)} not found!");
 
                 double? value = null;
-                if (reader.TokenType != JsonTokenType.Number && reader.TokenType != JsonTokenType.Null)
-                {
-                   
-                    throw new JsonException($"Unexpected Token {reader.TokenType}");
-                }
                 
-                if (reader.TryGetDouble(out var current))
+                if (reader.TokenType != JsonTokenType.Number && reader.TokenType != JsonTokenType.Null)
+                    throw new JsonException($"Can not deserialize {nameof(MetricDatapoint)}, unexpected token {reader.TokenType}");
+
+                if (reader.TokenType == JsonTokenType.Number && reader.TryGetDouble(out var current))
                     value = current;
+                else if (reader.TokenType != JsonTokenType.Null) 
+                    throw new JsonException($"Can not deserialize {nameof(MetricDatapoint)}, unexpected token {reader.TokenType}");
 
-                if (!reader.Read() || !reader.TryGetDouble(out var timestamp) || !reader.Read() || reader.TokenType != JsonTokenType.EndArray)
-                    throw exception;
+                if (!reader.Read() || !reader.TryGetInt64(out var timestamp))
+                    throw new JsonException($"Can not deserialize {nameof(MetricDatapoint)}, {nameof(timestamp)} not found!");
+                
+                if (!reader.Read() || reader.TokenType != JsonTokenType.EndArray)
+                    throw new JsonException($"Can not deserialize {nameof(MetricDatapoint)}, {nameof(JsonTokenType.EndArray)} not found!");
 
-                return new MetricDatapoint(value, (long) timestamp);
+                return new MetricDatapoint(value, timestamp);
             }
 
             public override void Write(Utf8JsonWriter writer, MetricDatapoint datapoint, JsonSerializerOptions options)
