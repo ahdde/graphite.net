@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using ahd.Graphite.Path;
 
 namespace ahd.Graphite.Base
@@ -24,6 +25,11 @@ namespace ahd.Graphite.Base
             if (checkPath && name.IndexOfAny(ReservedChars) >= 0)
                 throw new InvalidOperationException();
             Name = name;
+        }
+
+        internal virtual void ToStringBuilder(StringBuilder builder)
+        {
+            builder.Append(Name ?? String.Empty);
         }
 
         /// <summary>

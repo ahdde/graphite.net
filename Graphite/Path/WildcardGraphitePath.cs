@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using ahd.Graphite.Base;
 
 namespace ahd.Graphite.Path
@@ -9,9 +10,10 @@ namespace ahd.Graphite.Path
         {
         }
 
-        public override string ToString()
+        internal override void ToStringBuilder(StringBuilder builder)
         {
-            return Previous + "*";
+            Previous.ToStringBuilder(builder);
+            builder.Append('*');
         }
 
         public override GraphitePath Wildcard()
