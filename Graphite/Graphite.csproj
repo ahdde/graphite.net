@@ -21,7 +21,7 @@
     <Description>client implementation for sending and retrieving values from and to any graphite server.</Description>
     <Product>Graphite</Product>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>graphite.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\graphite.snk</AssemblyOriginatorKeyFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -54,8 +54,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Razorvine.Pickle" Version="1.0.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,6 +75,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Functions.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>ahd.Graphite.Test, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f5a0c6d7f18a890e7c76bf85cef11fbde4769fc7f5c41f1e436245c97b6fd7c5dd4947b216c0107f56f621f396b88f5dd13aa3dc7958d99de286011beaea2ef423ed897012af252276705efe81d17268e4e09b1909985c8b65e2cc874e7c1df59178e03dfed26701d1d45f6b1d0ab467f6d753cacb3a5a2a27024284c83beecc</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>
