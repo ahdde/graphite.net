@@ -1,4 +1,7 @@
-﻿using ahd.Graphite.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ahd.Graphite.Base;
 
 namespace ahd.Graphite.Path
 {
@@ -20,6 +23,14 @@ namespace ahd.Graphite.Path
         protected ModifiedGraphitePath(string name, GraphitePath previous) : base(name)
         {
             Previous = previous;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            ToStringBuilder(sb);
+            return sb.ToString();
         }
     }
 }

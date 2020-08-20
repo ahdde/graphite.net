@@ -9,9 +9,12 @@ namespace ahd.Graphite.Path
         {
         }
 
-        public override string ToString()
+        internal override void ToStringBuilder(StringBuilder builder)
         {
-            return $"{Previous}[{Name}]";
+            Previous.ToStringBuilder(builder);
+            builder.Append('[');
+            builder.Append(Name);
+            builder.Append(']');
         }
 
         public override GraphitePath Range(char start, char end)
