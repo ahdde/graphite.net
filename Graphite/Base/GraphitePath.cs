@@ -58,17 +58,6 @@ namespace ahd.Graphite.Base
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        [Obsolete("use Dot(...)")]
-        public GraphitePath Path(string name)
-        {
-            return Dot(name);
-        }
-
-        /// <summary>
-        /// appends a part to the current target
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public GraphitePath Dot(string name)
         {
             return new PathGraphitePath(name, this);
@@ -81,16 +70,6 @@ namespace ahd.Graphite.Base
         public virtual GraphitePath Wildcard()
         {
             return new WildcardGraphitePath(this);
-        }
-
-        /// <summary>
-        /// appends a wildcardpath to the current target
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("use DotWildcard(...)")]
-        public GraphitePath WildcardPath()
-        {
-            return DotWildcard();
         }
 
         /// <summary>
@@ -119,18 +98,6 @@ namespace ahd.Graphite.Base
         /// <param name="start">first char of the range</param>
         /// <param name="end">last char of the range</param>
         /// <returns></returns>
-        [Obsolete("use DotRange(...)")]
-        public GraphitePath RangePath(char start, char end)
-        {
-            return DotRange(start, end);
-        }
-
-        /// <summary>
-        /// appends a range path to the current target
-        /// </summary>
-        /// <param name="start">first char of the range</param>
-        /// <param name="end">last char of the range</param>
-        /// <returns></returns>
         public GraphitePath DotRange(char start, char end)
         {
             return Dot(String.Empty).Range(start, end);
@@ -151,31 +118,9 @@ namespace ahd.Graphite.Base
         /// </summary>
         /// <param name="chars">list of chars</param>
         /// <returns></returns>
-        [Obsolete("use DotChars(...)")]
-        public GraphitePath CharsPath(params char[] chars)
-        {
-            return DotChars(chars);
-        }
-
-        /// <summary>
-        /// returns a char list path to the current target
-        /// </summary>
-        /// <param name="chars">list of chars</param>
-        /// <returns></returns>
         public GraphitePath DotChars(params char[] chars)
         {
             return Dot(String.Empty).Chars(chars);
-        }
-
-        /// <summary>
-        /// appends a value list to the current target
-        /// </summary>
-        /// <param name="value">list of values</param>
-        /// <returns></returns>
-        [Obsolete("use Values(...)")]
-        public GraphitePath Value(params string[] value)
-        {
-            return Values(value);
         }
 
         /// <summary>
@@ -186,17 +131,6 @@ namespace ahd.Graphite.Base
         public virtual GraphitePath Values(params string[] values)
         {
             return new ValueGraphitePath(String.Join(",", values), this);
-        }
-
-        /// <summary>
-        /// appends a value list path to the current target
-        /// </summary>
-        /// <param name="value">list of values</param>
-        /// <returns></returns>
-        [Obsolete("use DotValues(...)")]
-        public GraphitePath ValuePath(params string[] value)
-        {
-            return DotValues(value);
         }
 
         /// <summary>
