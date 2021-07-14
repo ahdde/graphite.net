@@ -40,7 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,9 +53,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.4" />
-    <PackageReference Include="Razorvine.Pickle" Version="1.0.0" />
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.8" />
+    <PackageReference Include="Razorvine.Pickle" Version="1.1.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
