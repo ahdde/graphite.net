@@ -188,6 +188,76 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Iterates over a two lists and aggregates using specified function
+		/// list1[0] to list2[0], list1[1] to list2[1] and so on.
+		/// The lists will need to be the same length
+		/// <para>
+		/// Position of seriesList matters. For example using "sum" function
+		/// ``aggregateSeriesLists(list1[0..n], list2[0..n], "sum")``
+		/// it would find sum for each member
+		/// of the list ``list1[0] + list2[0], list1[1] + list2[1], list1[n] + list2[n]``.
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=aggregateSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped, 'sum')
+		/// </code>
+		/// <para>
+		/// An example above would be the same as running :py:func:`aggregate &lt;aggregate&gt;` for each member of the list:
+		/// </para>
+		/// <code>
+		///   ?target=aggregate(mining.carbon.extracted,mining.carbon.shipped, 'sum')
+		///   &amp;target=aggregate(mining.graphite.extracted,mining.graphite.shipped, 'sum')
+		///   &amp;target=aggregate(mining.diamond.extracted,mining.diamond.shipped, 'sum')
+		/// </code>
+		/// <para>
+		/// This function can be used with aggregation functions ``average`` (or ``avg``), ``avg_zero``,
+		/// ``median``, ``sum`` (or ``total``), ``min``, ``max``, ``diff``, ``stddev``, ``count``,
+		/// ``range`` (or ``rangeOf``) , ``multiply`` &amp; ``last`` (or ``current``).
+		/// </para>
+		/// </summary>
+		public SeriesListFunction AggregateSeriesLists(SeriesListBase seriesListSecondPos, string func, double? xFilesFactor = null)
+		{
+			return Quaternary("aggregateSeriesLists", seriesListSecondPos, SingleQuote(func), xFilesFactor?.ToString("r", CultureInfo.InvariantCulture));
+		}
+
+		/// <summary>
+		/// Iterates over a two lists and aggregates using specified function
+		/// list1[0] to list2[0], list1[1] to list2[1] and so on.
+		/// The lists will need to be the same length
+		/// <para>
+		/// Position of seriesList matters. For example using "sum" function
+		/// ``aggregateSeriesLists(list1[0..n], list2[0..n], "sum")``
+		/// it would find sum for each member
+		/// of the list ``list1[0] + list2[0], list1[1] + list2[1], list1[n] + list2[n]``.
+		/// </para>
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=aggregateSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped, 'sum')
+		/// </code>
+		/// <para>
+		/// An example above would be the same as running :py:func:`aggregate &lt;aggregate&gt;` for each member of the list:
+		/// </para>
+		/// <code>
+		///   ?target=aggregate(mining.carbon.extracted,mining.carbon.shipped, 'sum')
+		///   &amp;target=aggregate(mining.graphite.extracted,mining.graphite.shipped, 'sum')
+		///   &amp;target=aggregate(mining.diamond.extracted,mining.diamond.shipped, 'sum')
+		/// </code>
+		/// <para>
+		/// This function can be used with aggregation functions ``average`` (or ``avg``), ``avg_zero``,
+		/// ``median``, ``sum`` (or ``total``), ``min``, ``max``, ``diff``, ``stddev``, ``count``,
+		/// ``range`` (or ``rangeOf``) , ``multiply`` &amp; ``last`` (or ``current``).
+		/// </para>
+		/// </summary>
+		public SeriesListFunction AggregateSeriesLists(SeriesListBase seriesListSecondPos, string func)
+		{
+			return Ternary("aggregateSeriesLists", seriesListSecondPos, SingleQuote(func));
+		}
+
+		/// <summary>
 		/// Call aggregator after inserting wildcards at the given position(s).
 		/// <para>
 		/// Example:
@@ -918,7 +988,10 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Call averageSeries after inserting wildcards at the given position(s).
+		/// Categorizes the provided series in groups by name, by ignoring
+		/// ("wildcarding") the given position(s) and calls averageSeries on each group.
+		/// Important: the introduction of wildcards only happens *after* retrieving
+		/// the input.
 		/// <para>
 		/// Example:
 		/// </para>
@@ -929,7 +1002,7 @@ namespace ahd.Graphite.Base
 		/// This would be the equivalent of
 		/// </para>
 		/// <code>
-		///   &amp;target=averageSeries(host.*.cpu-user.value)&amp;target=averageSeries(host.*.cpu-system.value)
+		///   &amp;target=averageSeries(host.cpu-[0-7].cpu-user.value)&amp;target=averageSeries(host.cpu-[0-7].cpu-system.value)
 		/// </code>
 		/// <para>
 		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``average``.
@@ -941,7 +1014,10 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Call averageSeries after inserting wildcards at the given position(s).
+		/// Categorizes the provided series in groups by name, by ignoring
+		/// ("wildcarding") the given position(s) and calls averageSeries on each group.
+		/// Important: the introduction of wildcards only happens *after* retrieving
+		/// the input.
 		/// <para>
 		/// Example:
 		/// </para>
@@ -952,7 +1028,7 @@ namespace ahd.Graphite.Base
 		/// This would be the equivalent of
 		/// </para>
 		/// <code>
-		///   &amp;target=averageSeries(host.*.cpu-user.value)&amp;target=averageSeries(host.*.cpu-system.value)
+		///   &amp;target=averageSeries(host.cpu-[0-7].cpu-user.value)&amp;target=averageSeries(host.cpu-[0-7].cpu-system.value)
 		/// </code>
 		/// <para>
 		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``average``.
@@ -1379,6 +1455,33 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
+		/// Iterates over a two lists and subtracts series lists 2 through n from series 1
+		/// list1[0] to list2[0], list1[1] to list2[1] and so on.
+		/// The lists will need to be the same length
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=diffSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped)
+		/// </code>
+		/// <para>
+		/// An example above would be the same as running :py:func:`diffSeries &lt;diffSeries&gt;` for each member of the list:
+		/// </para>
+		/// <code>
+		///   ?target=diffSeries(mining.carbon.extracted,mining.carbon.shipped)
+		///   &amp;target=diffSeries(mining.graphite.extracted,mining.graphite.shipped)
+		///   &amp;target=diffSeries(mining.diamond.extracted,mining.diamond.shipped)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregateSeriesLists &lt;aggregateSeriesLists&gt;` with aggregation ``diff``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction DiffSeriesLists(SeriesListBase seriesListSecondPos)
+		{
+			return Binary("diffSeriesLists", seriesListSecondPos);
+		}
+
+		/// <summary>
 		/// Takes a dividend metric and a divisor metric and draws the division result.
 		/// A constant may *not* be passed. To divide by a constant, use the scale()
 		/// function (which is essentially a multiplication operation) and use the inverse
@@ -1729,6 +1832,42 @@ namespace ahd.Graphite.Base
 		public SeriesListFunction GroupByNodes(string callback, params string[] nodes)
 		{
 			return new SeriesListFunction("groupByNodes", Merge(this, Merge(SingleQuote(callback), nodes.Select(SingleQuote).ToArray())));
+		}
+
+		/// <summary>
+		/// Takes a serieslist and maps a callback to subgroups within as defined by multiple nodes
+		/// <code>
+		///   &amp;target=groupByNodes(ganglia.server*.*.cpu.load*,"sum",1,4)
+		/// </code>
+		/// <para>
+		/// Would return multiple series which are each the result of applying the "sum" aggregation
+		/// to groups joined on the nodes' list (0 indexed) resulting in a list of targets like
+		/// </para>
+		/// <code>
+		///   sumSeries(ganglia.server1.*.cpu.load5),sumSeries(ganglia.server1.*.cpu.load10),sumSeries(ganglia.server1.*.cpu.load15),sumSeries(ganglia.server2.*.cpu.load5),sumSeries(ganglia.server2.*.cpu.load10),sumSeries(ganglia.server2.*.cpu.load15),...
+		/// </code>
+		/// <para>
+		/// This function can be used with all aggregation functions supported by
+		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
+		/// ``stddev``, ``range`` &amp; ``multiply``.
+		/// </para>
+		/// <para>
+		/// Each node may be an integer referencing a node in the series name or a string identifying a tag.
+		/// </para>
+		/// <code>
+		///   &amp;target=seriesByTag("name=~cpu.load.*", "server=~server[1-9]+", "datacenter=~dc[1-9]+")|groupByNodes("average", "datacenter", 1)
+		/// </code>
+		/// <para>
+		///   # will produce output series like
+		///   # dc1.load5, dc2.load5, dc1.load10, dc2.load10
+		/// </para>
+		/// <para>
+		/// This complements :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` which takes a list of wildcard nodes.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction GroupByNodes(string callback)
+		{
+			return Binary("groupByNodes", SingleQuote(callback));
 		}
 
 		/// <summary>
@@ -3245,7 +3384,37 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Call multiplySeries after inserting wildcards at the given position(s).
+		/// Iterates over a two lists and subtracts series lists 2 through n from series 1
+		/// list1[0] to list2[0], list1[1] to list2[1] and so on.
+		/// The lists will need to be the same length
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=multiplySeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped)
+		/// </code>
+		/// <para>
+		/// An example above would be the same as running :py:func:`multiplySeries &lt;multiplySeries&gt;` for each member of the list:
+		/// </para>
+		/// <code>
+		///   ?target=multiplySeries(mining.carbon.extracted,mining.carbon.shipped)
+		///   &amp;target=multiplySeries(mining.graphite.extracted,mining.graphite.shipped)
+		///   &amp;target=multiplySeries(mining.diamond.extracted,mining.diamond.shipped)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregateSeriesLists &lt;aggregateSeriesLists&gt;` with aggregation ``multiply``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction MultiplySeriesLists(SeriesListBase seriesListSecondPos)
+		{
+			return Binary("multiplySeriesLists", seriesListSecondPos);
+		}
+
+		/// <summary>
+		/// Categorizes the provided series in groups by name, by ignoring
+		/// ("wildcarding") the given position(s) and calls multiplySeries on each group.
+		/// Important: the introduction of wildcards only happens *after* retrieving
+		/// the input.
 		/// <para>
 		/// Example:
 		/// </para>
@@ -3268,7 +3437,10 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Call multiplySeries after inserting wildcards at the given position(s).
+		/// Categorizes the provided series in groups by name, by ignoring
+		/// ("wildcarding") the given position(s) and calls multiplySeries on each group.
+		/// Important: the introduction of wildcards only happens *after* retrieving
+		/// the input.
 		/// <para>
 		/// Example:
 		/// </para>
@@ -4761,7 +4933,37 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Call sumSeries after inserting wildcards at the given position(s).
+		/// Iterates over a two lists and subtracts series lists 2 through n from series 1
+		/// list1[0] to list2[0], list1[1] to list2[1] and so on.
+		/// The lists will need to be the same length
+		/// <para>
+		/// Example:
+		/// </para>
+		/// <code>
+		///   &amp;target=sumSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped)
+		/// </code>
+		/// <para>
+		/// An example above would be the same as running :py:func:`sumSeries &lt;sumSeries&gt;` for each member of the list:
+		/// </para>
+		/// <code>
+		///   ?target=sumSeries(mining.carbon.extracted,mining.carbon.shipped)
+		///   &amp;target=sumSeries(mining.graphite.extracted,mining.graphite.shipped)
+		///   &amp;target=sumSeries(mining.diamond.extracted,mining.diamond.shipped)
+		/// </code>
+		/// <para>
+		/// This is an alias for :py:func:`aggregateSeriesLists &lt;aggregateSeriesLists&gt;` with aggregation ``sum``.
+		/// </para>
+		/// </summary>
+		public SeriesListFunction SumSeriesLists(SeriesListBase seriesListSecondPos)
+		{
+			return Binary("sumSeriesLists", seriesListSecondPos);
+		}
+
+		/// <summary>
+		/// Categorizes the provided series in groups by name, by ignoring
+		/// ("wildcarding") the given position(s) and calls sumSeries on each group.
+		/// Important: the introduction of wildcards only happens *after* retrieving
+		/// the input.
 		/// <para>
 		/// Example:
 		/// </para>
@@ -4784,7 +4986,10 @@ namespace ahd.Graphite.Base
 		}
 
 		/// <summary>
-		/// Call sumSeries after inserting wildcards at the given position(s).
+		/// Categorizes the provided series in groups by name, by ignoring
+		/// ("wildcarding") the given position(s) and calls sumSeries on each group.
+		/// Important: the introduction of wildcards only happens *after* retrieving
+		/// the input.
 		/// <para>
 		/// Example:
 		/// </para>
