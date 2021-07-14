@@ -17,7 +17,8 @@ namespace ahd.Graphite.Test
 {
     public class GraphiteClientTest
     {
-        private static readonly string GraphiteHost = "example.com";
+        private static readonly string GraphiteHost = "https://graphite.mpdev.systems:8443";
+        private static readonly string CarbonHost = "graphite.mpdev.systems";
 
         [Fact]
         public void CanCreateClient()
@@ -64,7 +65,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public void ClientHasSaneDefaultValues()
         {
-            var client = new GraphiteClient();
+            var client = new CarbonClient();
             Assert.Equal(2003, client.Formatter.Port);
             Assert.IsType<PlaintextGraphiteFormatter>(client.Formatter);
             Assert.Equal("localhost", client.Host);
@@ -73,10 +74,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public void CanCreateClientWithParams()
         {
-            var client = new GraphiteClient(GraphiteHost);
-            Assert.Equal(GraphiteHost, client.Host);
-
-            client = new GraphiteClient(GraphiteHost, new TestGraphiteFormatter(2004));
+            var client = new CarbonClient(GraphiteHost, new TestGraphiteFormatter(2004));
             Assert.Equal(GraphiteHost, client.Host);
             Assert.Equal(2004, client.Formatter.Port);
             Assert.IsType<TestGraphiteFormatter>(client.Formatter);
@@ -87,7 +85,7 @@ namespace ahd.Graphite.Test
         {
             var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
             server.Start();
-            var client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            var client = new CarbonClient("localhost", new PlaintextGraphiteFormatter(33225));
             var recvTask = ReceiveMetric(server);
             var sendTask = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             await sendTask;
@@ -103,11 +101,11 @@ namespace ahd.Graphite.Test
         {
             var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
             server.Start();
-            var client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            var client = new CarbonClient("localhost", new PlaintextGraphiteFormatter(33225));
             var recvTask = ReceiveMetric(server);
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             
-            client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            client = new CarbonClient("localhost", new PlaintextGraphiteFormatter(33225));
             await client.SendAsync("usage.unittest.ram.count", Environment.ProcessorCount);
             //"kill" all existing tcp connections
             new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
@@ -124,7 +122,7 @@ namespace ahd.Graphite.Test
         {
             var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
             server.Start();
-            var client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            var client = new CarbonClient("localhost", new PlaintextGraphiteFormatter(33225));
 
             var send = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             //accept and dispose client connection
@@ -136,7 +134,7 @@ namespace ahd.Graphite.Test
                 await send;
                 await receive;
             }
-            client = new GraphiteClient("localhost", new PlaintextGraphiteFormatter(33225));
+            client = new CarbonClient("localhost", new PlaintextGraphiteFormatter(33225));
             var recvTask = ReceiveMetric(server);
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
@@ -152,7 +150,7 @@ namespace ahd.Graphite.Test
         {
             var server = new TcpListener(new IPEndPoint(IPAddress.Loopback, 33225));
             server.Start();
-            var client = new GraphiteClient("localhost", new PickleGraphiteFormatter(33225));
+            var client = new CarbonClient("localhost", new PickleGraphiteFormatter(33225));
 
             var send = client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount); 
             //accept and dispose client connection
@@ -164,7 +162,7 @@ namespace ahd.Graphite.Test
                 await send;
                 await receive;
             }
-            client = new GraphiteClient("localhost", new PickleGraphiteFormatter(33225));
+            client = new CarbonClient("localhost", new PickleGraphiteFormatter(33225));
             var recvTask = ReceiveMetric(server);
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             new CarbonConnectionPool("localhost", new PickleGraphiteFormatter(33225)).ClearPool();
@@ -196,7 +194,7 @@ namespace ahd.Graphite.Test
         [Trait("Category", "Integration")]
         public async Task SendMetric()
         {
-            var client = new GraphiteClient(GraphiteHost);
+            var client = new CarbonClient(CarbonHost);
             await client.SendAsync("usage.unittest.cpu.count", Environment.ProcessorCount);
             Console.WriteLine("done");
         }
@@ -205,7 +203,7 @@ namespace ahd.Graphite.Test
         [Trait("Category", "Integration")]
         public async Task SendPickledMetric()
         {
-            var client = new GraphiteClient(GraphiteHost, new PickleGraphiteFormatter());
+            var client = new CarbonClient(CarbonHost, new PickleGraphiteFormatter());
             await client.SendAsync("usage.unittest.pickled.cpu.count", Environment.ProcessorCount);
         }
 
@@ -213,7 +211,7 @@ namespace ahd.Graphite.Test
         [Trait("Category", "Integration")]
         public async Task CanSendToV6OnlyHost()
         {
-            var client = new GraphiteClient("ipv6.test-ipv6.com", new PlaintextGraphiteFormatter(80));
+            var client = new CarbonClient("ipv6.test-ipv6.com", new PlaintextGraphiteFormatter(80));
             await client.SendAsync("usage.unittest.cpu.count", 1);
             client.Send("usage.unittest.cpu.count", 1);
         }
@@ -222,7 +220,7 @@ namespace ahd.Graphite.Test
         [Trait("Category", "Integration")]
         public async Task CanSendToV4OnlyHost()
         {
-            var client = new GraphiteClient("test-ipv6.com", new PlaintextGraphiteFormatter(80));
+            var client = new CarbonClient("test-ipv6.com", new PlaintextGraphiteFormatter(80));
             await client.SendAsync("usage.unittest.cpu.count", 1);
             client.Send("usage.unittest.cpu.count", 1);
         }
@@ -234,9 +232,9 @@ namespace ahd.Graphite.Test
             var random = new Random();
             while (random.Next() > 0)
             {
-                var client = new GraphiteClient(GraphiteHost, new PickleGraphiteFormatter());
+                var client = new CarbonClient(CarbonHost, new PickleGraphiteFormatter());
                 client.Send("test.client.random1", random.NextDouble() * 100);
-                client = new GraphiteClient(GraphiteHost, new PlaintextGraphiteFormatter());
+                client = new CarbonClient(CarbonHost, new PlaintextGraphiteFormatter());
                 client.Send("test.client.random2", random.NextDouble() * 100);
                 Thread.Sleep(500);
             }
@@ -250,9 +248,9 @@ namespace ahd.Graphite.Test
             var random = new Random();
             while (random.Next() > 0)
             {
-                var client = new GraphiteClient(GraphiteHost, new PickleGraphiteFormatter());
+                var client = new CarbonClient(CarbonHost, new PickleGraphiteFormatter());
                 await client.SendAsync("test.client.random1", random.NextDouble() * 100);
-                client = new GraphiteClient(GraphiteHost, new PlaintextGraphiteFormatter());
+                client = new CarbonClient(CarbonHost, new PlaintextGraphiteFormatter());
                 await client.SendAsync("test.client.random2", random.NextDouble() * 100);
                 await Task.Delay(500);
             }
@@ -417,7 +415,7 @@ namespace ahd.Graphite.Test
         [Fact]
         public async Task CanQueryLongFormulas()
         {
-            var client = new GraphiteClient(GraphiteHost){UseSsl = false};
+            var client = new GraphiteClient(GraphiteHost.Replace("https", "http"));
             var metrics = new SeriesListBase[768];
             for (int i = 0; i < metrics.Length; i++)
             {

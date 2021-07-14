@@ -7,7 +7,7 @@ Client library for submitting data to and querying from [graphite](https://githu
 ## Code Example
 ### Submit metrics
 ```csharp
-var client = new GraphiteClient("example.com");
+var client = new CarbonClient("example.com");
 
 var datapoints = new[]
     {

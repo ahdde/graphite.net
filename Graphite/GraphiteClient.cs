@@ -12,77 +12,63 @@ using ahd.Graphite.Exceptions;
 namespace ahd.Graphite
 {
     /// <summary>
-    /// Client for submitting data to and querying from graphite
+    /// Client for submitting data to carbon
     /// </summary>
-    public class GraphiteClient
+    public class CarbonClient
     {
         private readonly CarbonConnectionPool _carbonPool;
+        
+        /// <summary>
+        /// Creates a client for localhost
+        /// </summary>
+        public CarbonClient():this("localhost")
+        {
+        }
 
+        /// <summary>
+        /// Creates a client with the specified host
+        /// </summary>
+        /// <param name="host">Graphite hostname</param>
+        public CarbonClient(string host):this(host, new PlaintextGraphiteFormatter())
+        {
+        }
         /// <summary>
         /// Creates a client with the specified host and formatter
         /// </summary>
-        /// <param name="host">Graphite hostname</param>
+        /// <param name="host">carbon hostname</param>
         /// <param name="formatter">formatter for sending data to graphite</param>
-        public GraphiteClient(string host, IGraphiteFormatter formatter)
+        public CarbonClient(string host, IGraphiteFormatter formatter)
         {
             if (String.IsNullOrEmpty(host)) throw new ArgumentNullException(nameof(host));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
             Formatter = formatter;
             Host = host;
-            UseSsl = true;
-            HttpApiPort = 443;
             BatchSize = 500;
             UseDualStack = true;
             _carbonPool = new CarbonConnectionPool(Host, Formatter);
         }
         
         /// <summary>
-        /// Creates a client with the specified host
-        /// </summary>
-        /// <param name="host">Graphite hostname</param>
-        public GraphiteClient(string host):this(host, new PlaintextGraphiteFormatter())
-        {
-        }
-
-        /// <summary>
-        /// Creates a client for localhost
-        /// </summary>
-        public GraphiteClient():this("localhost", new PlaintextGraphiteFormatter())
-        {
-        }
-        
-        /// <summary>
-        /// graphite hostname - default "localhost"
+        /// carbon hostname - default "localhost"
         /// </summary>
         public string Host { get; }
-
-        /// <summary>
-        /// Use ssl for query - default "true"
-        /// </summary>
-        public bool UseSsl { get; set; }
-
-        /// <summary>
-        /// port for query - default "443" 
-        /// For data transmissions, the value specified in the <see cref="Formatter"/>'s <see cref="IGraphiteFormatter.Port"/> is used.
-        /// </summary>
-        public ushort HttpApiPort { get; set; }
 
         /// <summary>
         /// Formatter for sending data - default <see cref="PlaintextGraphiteFormatter"/>
         /// </summary>
         public IGraphiteFormatter Formatter { get; }
-
+        
         /// <summary>
         /// Maximum number of datapoints to send in a single request - default "500"
         /// </summary>
         public int BatchSize { get; set; }
-
+        
         /// <summary>
         /// Use ip dual stack for sending metrics. Defaults to true.
         /// </summary>
         public bool UseDualStack { get; set; }
-
+        
         /// <summary>
         /// Send a single datapoint
         /// </summary>
@@ -256,7 +242,46 @@ namespace ahd.Graphite
                 _carbonPool.Return(client);
             }
         }
+    }
 
+    /// <summary>
+    /// Client for querying data from graphite
+    /// </summary>
+    public class GraphiteClient
+    {
+        private readonly HttpClient _client;
+        
+        /// <summary>
+        /// Creates a client for localhost
+        /// </summary>
+        public GraphiteClient():this("https://localhost")
+        {
+        }
+        /// <summary>
+        /// Creates a client with the specified endpoint
+        /// </summary>
+        /// <param name="baseAddress">graphite api endpoint</param>
+        public GraphiteClient(string baseAddress):this(new Uri(baseAddress))
+        {
+        }
+
+        /// <summary>
+        /// Creates a client with the specified endpoint
+        /// </summary>
+        /// <param name="baseAddress">graphite api endpoint</param>
+        public GraphiteClient(Uri baseAddress):this(new HttpClient{BaseAddress = baseAddress})
+        {
+        }
+
+        /// <summary>
+        /// Creates a client using the supplied http client
+        /// </summary>
+        /// <param name="client">preconfigured http client</param>
+        public GraphiteClient(HttpClient client)
+        {
+            _client = client;
+        }
+        
         /// <summary>
         /// Walks the metrics tree and returns every metric found as a sorted JSON array
         /// </summary>
@@ -264,12 +289,9 @@ namespace ahd.Graphite
         /// <returns>list of all metrics</returns>
         public async Task<string[]> GetAllMetricsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
-            {
-                var response = await client.GetAsync("/metrics/index.json", cancellationToken).ConfigureAwait(false);
-                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-                return await response.Content.ReadAsAsync<string[]>(cancellationToken).ConfigureAwait(false);
-            }
+            var response = await _client.GetAsync("/metrics/index.json", cancellationToken).ConfigureAwait(false);
+            await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+            return await response.Content.ReadAsAsync<string[]>(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -285,23 +307,21 @@ namespace ahd.Graphite
         {
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
 
-            using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
-            {
-                query = WebUtility.UrlEncode(query);
-                string fromUnix = String.Empty;
-                string untilUnix = String.Empty;
-                if (from.HasValue)
-                    fromUnix = Datapoint.ToUnixTimestamp(from.Value).ToString();
-                if (until.HasValue)
-                    untilUnix = Datapoint.ToUnixTimestamp(until.Value).ToString();
+            query = WebUtility.UrlEncode(query);
+            string fromUnix = String.Empty;
+            string untilUnix = String.Empty;
+            if (from.HasValue)
+                fromUnix = Datapoint.ToUnixTimestamp(from.Value).ToString();
+            if (until.HasValue)
+                untilUnix = Datapoint.ToUnixTimestamp(until.Value).ToString();
 
-                var uri = String.Format("/metrics/find?query={0}&format=completer&wildcards={1}&from={2}&until={3}",
-                    query, wildcards ? 1 : 0, fromUnix, untilUnix);
+            var uri = String.Format("/metrics/find?query={0}&format=completer&wildcards={1}&from={2}&until={3}",
+                query, wildcards ? 1 : 0, fromUnix, untilUnix);
 
-                var response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
-                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-                return (await response.Content.ReadAsAsync<GraphiteFindResult>(cancellationToken).ConfigureAwait(false)).Metrics;
-            }
+            var response = await _client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+            await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+            return (await response.Content.ReadAsAsync<GraphiteFindResult>(cancellationToken).ConfigureAwait(false))
+                .Metrics;
         }
 
         /// <summary>
@@ -336,30 +356,20 @@ namespace ahd.Graphite
         {
             if (query == null || query.Length == 0) throw new ArgumentNullException(nameof(query));
 
-            using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
+            var values = new List<KeyValuePair<string, string>>
             {
-                var values = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("leavesOnly",leavesOnly ? "1" : "0"),
-                };
-                foreach (var q in query)
-                {
-                    values.Add(new KeyValuePair<string, string>("query", q.ToString()));
-                }
-
-                var body = new FormUrlEncodedContent(values);
-                var response = await client.PostAsync("/metrics/expand", body, cancellationToken).ConfigureAwait(false);
-                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-                return (await response.Content.ReadAsAsync<GraphiteExpandResult>(cancellationToken).ConfigureAwait(false)).Results;
+                new KeyValuePair<string, string>("leavesOnly", leavesOnly ? "1" : "0"),
+            };
+            foreach (var q in query)
+            {
+                values.Add(new KeyValuePair<string, string>("query", q.ToString()));
             }
-        }
 
-        private Uri GetHttpApiUri()
-        {
-            var builder = new UriBuilder("http", Host, HttpApiPort);
-            if (UseSsl)
-                builder.Scheme = "https";
-            return builder.Uri;
+            var body = new FormUrlEncodedContent(values);
+            var response = await _client.PostAsync("/metrics/expand", body, cancellationToken).ConfigureAwait(false);
+            await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+            return (await response.Content.ReadAsAsync<GraphiteExpandResult>(cancellationToken).ConfigureAwait(false))
+                .Results;
         }
 
         /// <summary>
@@ -391,53 +401,50 @@ namespace ahd.Graphite
         {
             if (targets == null || targets.Length == 0) throw new ArgumentNullException(nameof(targets));
 
-            using (var client = new HttpClient {BaseAddress = GetHttpApiUri()})
+            var values = new List<KeyValuePair<string, string>>
             {
-                var values = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("format","json"),
-                };
+                new KeyValuePair<string, string>("format", "json"),
+            };
 
-                foreach (var target in targets)
-                {
-                    values.Add(new KeyValuePair<string, string>("target", target.ToString()));
-                }
-
-                if (!String.IsNullOrEmpty(from))
-                {
-                    values.Add(new KeyValuePair<string, string>("from", from));
-                }
-                if (!String.IsNullOrEmpty(until))
-                {
-                    values.Add(new KeyValuePair<string, string>("until", until));
-                }
-                if (template != null)
-                {
-                    foreach (var kvp in template)
-                    {
-                        values.Add(new KeyValuePair<string, string>($"template[{kvp.Key}]", kvp.Value));
-                    }
-                }
-                if (maxDataPoints.HasValue)
-                {
-                    values.Add(new KeyValuePair<string, string>("maxDataPoints", maxDataPoints.Value.ToString()));
-                }
-
-                //workaround for size limit in FormUrlEncodedContent
-                var sb = new StringBuilder();
-                foreach (var value in values)
-                {
-                    if (sb.Length > 0)
-                        sb.Append("&");
-                    sb.Append(WebUtility.UrlEncode(value.Key)).Append("=").Append(WebUtility.UrlEncode(value.Value));
-                }
-                var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
-
-                var response = await client.PostAsync("/render",body, cancellationToken).ConfigureAwait(false);
-                await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
-
-                return await response.Content.ReadAsAsync<GraphiteMetricData[]>(cancellationToken).ConfigureAwait(false);
+            foreach (var target in targets)
+            {
+                values.Add(new KeyValuePair<string, string>("target", target.ToString()));
             }
+
+            if (!String.IsNullOrEmpty(from))
+            {
+                values.Add(new KeyValuePair<string, string>("from", from));
+            }
+            if (!String.IsNullOrEmpty(until))
+            {
+                values.Add(new KeyValuePair<string, string>("until", until));
+            }
+            if (template != null)
+            {
+                foreach (var kvp in template)
+                {
+                    values.Add(new KeyValuePair<string, string>($"template[{kvp.Key}]", kvp.Value));
+                }
+            }
+            if (maxDataPoints.HasValue)
+            {
+                values.Add(new KeyValuePair<string, string>("maxDataPoints", maxDataPoints.Value.ToString()));
+            }
+
+            //workaround for size limit in FormUrlEncodedContent
+            var sb = new StringBuilder();
+            foreach (var value in values)
+            {
+                if (sb.Length > 0)
+                    sb.Append("&");
+                sb.Append(WebUtility.UrlEncode(value.Key)).Append("=").Append(WebUtility.UrlEncode(value.Value));
+            }
+            var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            var response = await _client.PostAsync("/render", body, cancellationToken).ConfigureAwait(false);
+            await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
+
+            return await response.Content.ReadAsAsync<GraphiteMetricData[]>(cancellationToken).ConfigureAwait(false);
         }
     }
 }
