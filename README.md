@@ -31,7 +31,7 @@ var path = new GraphitePath("data")
 var function = path.Sum().Alias("usage");
 
 //retrieve data from graphite
-var client = new GraphiteClient("example.com");
+var client = new GraphiteClient("http://example.com");
 var data = await client.GetMetricsDataAsync(function, "-1d")
 ```
 
