@@ -39,7 +39,7 @@ namespace ahd.Graphite
                     throw new JsonException($"Can not deserialize {nameof(GraphiteMetricData)}");
                 var target = string.Empty;
                 var datapoints = Array.Empty<MetricDatapoint>();
-                while (reader.Read())
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
                 {
                     if (reader.TokenType == JsonTokenType.PropertyName)
                     {

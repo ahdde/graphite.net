@@ -374,6 +374,31 @@ namespace ahd.Graphite.Test
         }
 
         [Fact]
+        public void CanDeserialize()
+        {
+            var json = "[5,123456789]";
+            var datapoint = JsonSerializer.Deserialize<MetricDatapoint>(json);
+            Assert.Equal(123456789, datapoint.UnixTimestamp);
+            Assert.Equal(5, datapoint.Value);
+
+            json = "{\"target\":\"unit.test\",\"datapoints\":[[5,123456789],[null,987654321]]}";
+            var metricData = JsonSerializer.Deserialize<GraphiteMetricData>(json);
+            Assert.Equal("unit.test", metricData.Target);
+            Assert.Equal(2, metricData.Datapoints.Length);
+
+            json = "{\"results\":[\"usage.test.1\",\"usage.test.2\"]}";
+            var expandResult = JsonSerializer.Deserialize<GraphiteExpandResult>(json);
+            Assert.Equal(2, expandResult.Results.Length);
+
+            json = "{\"metrics\":[{\"is_leaf\":\"0\",\"name\":\"1\",\"path\":\"usage.unittest.1.\"},{\"is_leaf\":\"1\",\"name\":\"2\",\"path\":\"usage.unittest.2\"}]}";
+            var findResult = JsonSerializer.Deserialize<GraphiteFindResult>(json);
+            Assert.Equal(2, findResult.Metrics.Length);
+            Assert.True(findResult.Metrics[1].Leaf);
+            Assert.Equal("1", findResult.Metrics[0].Text);
+            Assert.Equal("usage.unittest.1", findResult.Metrics[0].Id);
+        }
+
+        [Fact]
         [Trait("Category", "Integration")]
         public async Task CanGetMetricValues()
         {
