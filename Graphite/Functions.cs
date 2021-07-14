@@ -13,6 +13,7 @@ using System.Linq;
 
 namespace ahd.Graphite.Base
 {
+#pragma warning disable CS0419 // Ambiguous reference in cref attribute
 	public abstract partial class SeriesListBase
 	{
 		/// <summary>
@@ -204,7 +205,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=aggregateSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped, 'sum')
 		/// </code>
 		/// <para>
-		/// An example above would be the same as running :py:func:`aggregate &lt;aggregate&gt;` for each member of the list:
+		/// An example above would be the same as running <see cref="SeriesListBase.Aggregate"/> for each member of the list:
 		/// </para>
 		/// <code>
 		///   ?target=aggregate(mining.carbon.extracted,mining.carbon.shipped, 'sum')
@@ -239,7 +240,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=aggregateSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped, 'sum')
 		/// </code>
 		/// <para>
-		/// An example above would be the same as running :py:func:`aggregate &lt;aggregate&gt;` for each member of the list:
+		/// An example above would be the same as running <see cref="SeriesListBase.Aggregate"/> for each member of the list:
 		/// </para>
 		/// <code>
 		///   ?target=aggregate(mining.carbon.extracted,mining.carbon.shipped, 'sum')
@@ -275,11 +276,11 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
+		/// <see cref="SeriesListBase.Aggregate"/>: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
 		/// ``stddev``, ``range`` &amp; ``multiply``.
 		/// </para>
 		/// <para>
-		/// This complements :py:func:`groupByNodes &lt;groupByNodes&gt;` which takes a list of nodes that must match in each group.
+		/// This complements <see cref="SeriesListBase.GroupByNodes"/> which takes a list of nodes that must match in each group.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AggregateWithWildcards(string func, params uint[] position)
@@ -305,11 +306,11 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
+		/// <see cref="SeriesListBase.Aggregate"/>: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
 		/// ``stddev``, ``range`` &amp; ``multiply``.
 		/// </para>
 		/// <para>
-		/// This complements :py:func:`groupByNodes &lt;groupByNodes&gt;` which takes a list of nodes that must match in each group.
+		/// This complements <see cref="SeriesListBase.GroupByNodes"/> which takes a list of nodes that must match in each group.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AggregateWithWildcards(string func)
@@ -390,7 +391,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=seriesByTag("name=cpu")|aliasByTags("server","name")
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aliasByNode &lt;aliasByNode&gt;`.
+		/// This is an alias for <see cref="SeriesListBase.AliasByNode"/>.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AliasByTags(params uint[] tags)
@@ -404,7 +405,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=seriesByTag("name=cpu")|aliasByTags("server","name")
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aliasByNode &lt;aliasByNode&gt;`.
+		/// This is an alias for <see cref="SeriesListBase.AliasByNode"/>.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AliasByTags(params string[] tags)
@@ -581,7 +582,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -662,7 +663,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -743,7 +744,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -824,7 +825,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -958,7 +959,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=averageSeries(company.server.*.threads.busy)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AverageSeries(params SeriesListBase[] seriesLists)
@@ -979,7 +980,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=averageSeries(company.server.*.threads.busy)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AverageSeries()
@@ -1005,7 +1006,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=averageSeries(host.cpu-[0-7].cpu-user.value)&amp;target=averageSeries(host.cpu-[0-7].cpu-system.value)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateWithWildcards"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AverageSeriesWithWildcards(params uint[] position)
@@ -1031,7 +1032,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=averageSeries(host.cpu-[0-7].cpu-user.value)&amp;target=averageSeries(host.cpu-[0-7].cpu-system.value)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateWithWildcards"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction AverageSeriesWithWildcards()
@@ -1052,7 +1053,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=averageSeries(company.server.*.threads.busy)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction Avg(params SeriesListBase[] seriesLists)
@@ -1073,7 +1074,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=averageSeries(company.server.*.threads.busy)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction Avg()
@@ -1416,7 +1417,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=offset(diffSeries(service.connections.total,service.connections.failed),-4)
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``diff``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``diff``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction DiffSeries(params SeriesListBase[] seriesLists)
@@ -1446,7 +1447,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=offset(diffSeries(service.connections.total,service.connections.failed),-4)
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``diff``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``diff``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction DiffSeries()
@@ -1465,7 +1466,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=diffSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped)
 		/// </code>
 		/// <para>
-		/// An example above would be the same as running :py:func:`diffSeries &lt;diffSeries&gt;` for each member of the list:
+		/// An example above would be the same as running <see cref="SeriesListBase.DiffSeries"/> for each member of the list:
 		/// </para>
 		/// <code>
 		///   ?target=diffSeries(mining.carbon.extracted,mining.carbon.shipped)
@@ -1473,7 +1474,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=diffSeries(mining.diamond.extracted,mining.diamond.shipped)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateSeriesLists &lt;aggregateSeriesLists&gt;` with aggregation ``diff``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateSeriesLists"/> with aggregation ``diff``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction DiffSeriesLists(SeriesListBase seriesListSecondPos)
@@ -1706,7 +1707,7 @@ namespace ahd.Graphite.Base
 		/// Node may be an integer referencing a node in the series name or a string identifying a tag.
 		/// </para>
 		/// <para>
-		/// This is an alias for using :py:func:`groupByNodes &lt;groupByNodes&gt;` with a single node.
+		/// This is an alias for using <see cref="SeriesListBase.GroupByNodes"/> with a single node.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByNode(uint nodeNum, string callback = "average")
@@ -1730,7 +1731,7 @@ namespace ahd.Graphite.Base
 		/// Node may be an integer referencing a node in the series name or a string identifying a tag.
 		/// </para>
 		/// <para>
-		/// This is an alias for using :py:func:`groupByNodes &lt;groupByNodes&gt;` with a single node.
+		/// This is an alias for using <see cref="SeriesListBase.GroupByNodes"/> with a single node.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByNode(string nodeNum, string callback = "average")
@@ -1754,7 +1755,7 @@ namespace ahd.Graphite.Base
 		/// Node may be an integer referencing a node in the series name or a string identifying a tag.
 		/// </para>
 		/// <para>
-		/// This is an alias for using :py:func:`groupByNodes &lt;groupByNodes&gt;` with a single node.
+		/// This is an alias for using <see cref="SeriesListBase.GroupByNodes"/> with a single node.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByNode(string nodeNum)
@@ -1776,7 +1777,7 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
+		/// <see cref="SeriesListBase.Aggregate"/>: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
 		/// ``stddev``, ``range`` &amp; ``multiply``.
 		/// </para>
 		/// <para>
@@ -1790,7 +1791,7 @@ namespace ahd.Graphite.Base
 		///   # dc1.load5, dc2.load5, dc1.load10, dc2.load10
 		/// </para>
 		/// <para>
-		/// This complements :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` which takes a list of wildcard nodes.
+		/// This complements <see cref="SeriesListBase.AggregateWithWildcards"/> which takes a list of wildcard nodes.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByNodes(string callback, params uint[] nodes)
@@ -1812,7 +1813,7 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
+		/// <see cref="SeriesListBase.Aggregate"/>: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
 		/// ``stddev``, ``range`` &amp; ``multiply``.
 		/// </para>
 		/// <para>
@@ -1826,7 +1827,7 @@ namespace ahd.Graphite.Base
 		///   # dc1.load5, dc2.load5, dc1.load10, dc2.load10
 		/// </para>
 		/// <para>
-		/// This complements :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` which takes a list of wildcard nodes.
+		/// This complements <see cref="SeriesListBase.AggregateWithWildcards"/> which takes a list of wildcard nodes.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByNodes(string callback, params string[] nodes)
@@ -1848,7 +1849,7 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
+		/// <see cref="SeriesListBase.Aggregate"/>: ``average``, ``median``, ``sum``, ``min``, ``max``, ``diff``,
 		/// ``stddev``, ``range`` &amp; ``multiply``.
 		/// </para>
 		/// <para>
@@ -1862,7 +1863,7 @@ namespace ahd.Graphite.Base
 		///   # dc1.load5, dc2.load5, dc1.load10, dc2.load10
 		/// </para>
 		/// <para>
-		/// This complements :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` which takes a list of wildcard nodes.
+		/// This complements <see cref="SeriesListBase.AggregateWithWildcards"/> which takes a list of wildcard nodes.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction GroupByNodes(string callback)
@@ -1884,7 +1885,7 @@ namespace ahd.Graphite.Base
 		/// </code>
 		/// <para>
 		/// This function can be used with all aggregation functions supported by
-		/// :py:func:`aggregate &lt;aggregate&gt;`: ``average`` (or ``avg``), ``avg_zero``,
+		/// <see cref="SeriesListBase.Aggregate"/>: ``average`` (or ``avg``), ``avg_zero``,
 		/// ``median``, ``sum`` (or ``total``), ``min``, ``max``, ``diff``, ``stddev``, ``count``,
 		/// ``range`` (or ``rangeOf``) , ``multiply`` &amp; ``last`` (or ``current``).
 		/// </para>
@@ -1946,7 +1947,7 @@ namespace ahd.Graphite.Base
 		/// Draws the top 5 servers with the highest average value.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`highest &lt;highest&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.Highest"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction HighestAverage(int n)
@@ -1968,7 +1969,7 @@ namespace ahd.Graphite.Base
 		/// Draws the 5 servers with the highest busy threads.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`highest &lt;highest&gt;` with aggregation ``current``.
+		/// This is an alias for <see cref="SeriesListBase.Highest"/> with aggregation ``current``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction HighestCurrent(int n)
@@ -1993,7 +1994,7 @@ namespace ahd.Graphite.Base
 		/// period specified.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`highest &lt;highest&gt;` with aggregation ``max``.
+		/// This is an alias for <see cref="SeriesListBase.Highest"/> with aggregation ``max``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction HighestMax(int n)
@@ -2544,7 +2545,7 @@ namespace ahd.Graphite.Base
 		/// Draws the bottom 5 servers with the lowest average value.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`lowest &lt;lowest&gt;` with aggregation ``average``.
+		/// This is an alias for <see cref="SeriesListBase.Lowest"/> with aggregation ``average``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction LowestAverage(int n)
@@ -2566,7 +2567,7 @@ namespace ahd.Graphite.Base
 		/// Draws the 5 servers with the least busy threads right now.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`lowest &lt;lowest&gt;` with aggregation ``current``.
+		/// This is an alias for <see cref="SeriesListBase.Lowest"/> with aggregation ``current``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction LowestCurrent(int n)
@@ -2581,7 +2582,7 @@ namespace ahd.Graphite.Base
 		/// given mapNodes in common.
 		/// </para>
 		/// <para>
-		/// .. note:: This function is not very useful alone. It should be used with :py:func:`reduceSeries`
+		/// .. note:: This function is not very useful alone. It should be used with <see cref="SeriesListBase.ReduceSeries"/>
 		/// </para>
 		/// <code>
 		///   mapSeries(servers.*.cpu.*,1) =&gt;
@@ -2610,7 +2611,7 @@ namespace ahd.Graphite.Base
 		/// given mapNodes in common.
 		/// </para>
 		/// <para>
-		/// .. note:: This function is not very useful alone. It should be used with :py:func:`reduceSeries`
+		/// .. note:: This function is not very useful alone. It should be used with <see cref="SeriesListBase.ReduceSeries"/>
 		/// </para>
 		/// <code>
 		///   mapSeries(servers.*.cpu.*,1) =&gt;
@@ -2639,7 +2640,7 @@ namespace ahd.Graphite.Base
 		/// given mapNodes in common.
 		/// </para>
 		/// <para>
-		/// .. note:: This function is not very useful alone. It should be used with :py:func:`reduceSeries`
+		/// .. note:: This function is not very useful alone. It should be used with <see cref="SeriesListBase.ReduceSeries"/>
 		/// </para>
 		/// <code>
 		///   mapSeries(servers.*.cpu.*,1) =&gt;
@@ -2668,7 +2669,7 @@ namespace ahd.Graphite.Base
 		/// given mapNodes in common.
 		/// </para>
 		/// <para>
-		/// .. note:: This function is not very useful alone. It should be used with :py:func:`reduceSeries`
+		/// .. note:: This function is not very useful alone. It should be used with <see cref="SeriesListBase.ReduceSeries"/>
 		/// </para>
 		/// <code>
 		///   mapSeries(servers.*.cpu.*,1) =&gt;
@@ -2736,7 +2737,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=maxSeries(Server*.connections.total)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``max``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``max``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MaxSeries(params SeriesListBase[] seriesLists)
@@ -2754,7 +2755,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=maxSeries(Server*.connections.total)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``max``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``max``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MaxSeries()
@@ -2824,7 +2825,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=minSeries(Server*.connections.total)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``min``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``min``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MinSeries(params SeriesListBase[] seriesLists)
@@ -2842,7 +2843,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=minSeries(Server*.connections.total)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``min``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``min``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MinSeries()
@@ -3357,7 +3358,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=multiplySeries(Series.dividends,Series.divisors)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``multiply``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``multiply``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MultiplySeries(params SeriesListBase[] seriesLists)
@@ -3375,7 +3376,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=multiplySeries(Series.dividends,Series.divisors)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``multiply``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``multiply``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MultiplySeries()
@@ -3394,7 +3395,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=multiplySeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped)
 		/// </code>
 		/// <para>
-		/// An example above would be the same as running :py:func:`multiplySeries &lt;multiplySeries&gt;` for each member of the list:
+		/// An example above would be the same as running <see cref="SeriesListBase.MultiplySeries"/> for each member of the list:
 		/// </para>
 		/// <code>
 		///   ?target=multiplySeries(mining.carbon.extracted,mining.carbon.shipped)
@@ -3402,7 +3403,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=multiplySeries(mining.diamond.extracted,mining.diamond.shipped)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateSeriesLists &lt;aggregateSeriesLists&gt;` with aggregation ``multiply``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateSeriesLists"/> with aggregation ``multiply``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MultiplySeriesLists(SeriesListBase seriesListSecondPos)
@@ -3428,7 +3429,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=multiplySeries(web.host-0.{avg-response,total-request}.value)&amp;target=multiplySeries(web.host-1.{avg-response,total-request}.value)...
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``multiply``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateWithWildcards"/> with aggregation ``multiply``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MultiplySeriesWithWildcards(params uint[] position)
@@ -3454,7 +3455,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=multiplySeries(web.host-0.{avg-response,total-request}.value)&amp;target=multiplySeries(web.host-1.{avg-response,total-request}.value)...
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``multiply``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateWithWildcards"/> with aggregation ``multiply``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction MultiplySeriesWithWildcards()
@@ -3595,7 +3596,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -3676,7 +3677,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -3757,7 +3758,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -3838,7 +3839,7 @@ namespace ahd.Graphite.Base
 		/// the sum of all points in the wildcard series will be used instead.
 		/// <para>
 		/// A list of nodes can optionally be provided, if so they will be used to match series with their
-		/// corresponding totals following the same logic as :py:func:`groupByNodes &lt;groupByNodes&gt;`.
+		/// corresponding totals following the same logic as <see cref="SeriesListBase.GroupByNodes"/>.
 		/// </para>
 		/// <para>
 		/// When passing `nodes` the `total` parameter may be a series list or `None`.  If it is `None` then
@@ -4069,7 +4070,7 @@ namespace ahd.Graphite.Base
 		///     &amp;target=rangeOfSeries(Server*.connections.total)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``rangeOf``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``rangeOf``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction RangeOfSeries(params SeriesListBase[] seriesLists)
@@ -4087,7 +4088,7 @@ namespace ahd.Graphite.Base
 		///     &amp;target=rangeOfSeries(Server*.connections.total)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``rangeOf``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``rangeOf``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction RangeOfSeries()
@@ -4572,7 +4573,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=stddevSeries(company.server.*.threads.busy)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``stddev``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``stddev``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction StddevSeries(params SeriesListBase[] seriesLists)
@@ -4590,7 +4591,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=stddevSeries(company.server.*.threads.busy)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``stddev``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``stddev``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction StddevSeries()
@@ -4720,7 +4721,7 @@ namespace ahd.Graphite.Base
 		/// of the other metrics is averaged for the metrics with finer retention rates.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction Sum(params SeriesListBase[] seriesLists)
@@ -4747,7 +4748,7 @@ namespace ahd.Graphite.Base
 		/// of the other metrics is averaged for the metrics with finer retention rates.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction Sum()
@@ -4897,7 +4898,7 @@ namespace ahd.Graphite.Base
 		/// of the other metrics is averaged for the metrics with finer retention rates.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction SumSeries(params SeriesListBase[] seriesLists)
@@ -4924,7 +4925,7 @@ namespace ahd.Graphite.Base
 		/// of the other metrics is averaged for the metrics with finer retention rates.
 		/// </para>
 		/// <para>
-		/// This is an alias for :py:func:`aggregate &lt;aggregate&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.Aggregate"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction SumSeries()
@@ -4943,7 +4944,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=sumSeriesLists(mining.{carbon,graphite,diamond}.extracted,mining.{carbon,graphite,diamond}.shipped)
 		/// </code>
 		/// <para>
-		/// An example above would be the same as running :py:func:`sumSeries &lt;sumSeries&gt;` for each member of the list:
+		/// An example above would be the same as running <see cref="SeriesListBase.SumSeries"/> for each member of the list:
 		/// </para>
 		/// <code>
 		///   ?target=sumSeries(mining.carbon.extracted,mining.carbon.shipped)
@@ -4951,7 +4952,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=sumSeries(mining.diamond.extracted,mining.diamond.shipped)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateSeriesLists &lt;aggregateSeriesLists&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateSeriesLists"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction SumSeriesLists(SeriesListBase seriesListSecondPos)
@@ -4977,7 +4978,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=sumSeries(host.cpu-[0-7].cpu-user.value)&amp;target=sumSeries(host.cpu-[0-7].cpu-system.value)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateWithWildcards"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction SumSeriesWithWildcards(params uint[] position)
@@ -5003,7 +5004,7 @@ namespace ahd.Graphite.Base
 		///   &amp;target=sumSeries(host.cpu-[0-7].cpu-user.value)&amp;target=sumSeries(host.cpu-[0-7].cpu-system.value)
 		/// </code>
 		/// <para>
-		/// This is an alias for :py:func:`aggregateWithWildcards &lt;aggregateWithWildcards&gt;` with aggregation ``sum``.
+		/// This is an alias for <see cref="SeriesListBase.AggregateWithWildcards"/> with aggregation ``sum``.
 		/// </para>
 		/// </summary>
 		public SeriesListFunction SumSeriesWithWildcards()
@@ -5801,7 +5802,7 @@ namespace ahd.Graphite.Functions
 	///     servers.serverN.disk.reduce.asPercent
 	/// </para>
 	/// <para>
-	/// .. seealso:: :py:func:`mapSeries`
+	/// .. seealso:: <see cref="SeriesListBase.MapSeries"/>
 	/// </para>
 	/// </summary>
 	public partial class ReduceSeriesList : SeriesListFunction
@@ -5860,7 +5861,7 @@ namespace ahd.Graphite.Functions
 		///     servers.serverN.disk.reduce.asPercent
 		/// </para>
 		/// <para>
-		/// .. seealso:: :py:func:`mapSeries`
+		/// .. seealso:: <see cref="SeriesListBase.MapSeries"/>
 		/// </para>
 		/// </summary>
 		public ReduceSeriesList(SeriesListBase seriesLists, string reduceFunction, uint reduceNode, params string[] reduceMatchers)
@@ -5923,7 +5924,7 @@ namespace ahd.Graphite.Functions
 	///     servers.serverN.disk.reduce.asPercent
 	/// </para>
 	/// <para>
-	/// .. seealso:: :py:func:`mapSeries`
+	/// .. seealso:: <see cref="SeriesListBase.MapSeries"/>
 	/// </para>
 	/// </summary>
 	public partial class ReduceSeriesSeriesList : SeriesListFunction
@@ -5982,7 +5983,7 @@ namespace ahd.Graphite.Functions
 		///     servers.serverN.disk.reduce.asPercent
 		/// </para>
 		/// <para>
-		/// .. seealso:: :py:func:`mapSeries`
+		/// .. seealso:: <see cref="SeriesListBase.MapSeries"/>
 		/// </para>
 		/// </summary>
 		public ReduceSeriesSeriesList(SeriesListBase seriesLists, string reduceFunction, uint reduceNode, params string[] reduceMatchers)
@@ -6586,4 +6587,5 @@ namespace ahd.Graphite.Functions
 		{
 		}
 	}
+#pragma warning restore CS0419 // Ambiguous reference in cref attribute
 }

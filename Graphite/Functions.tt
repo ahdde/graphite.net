@@ -9,6 +9,7 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Globalization" #>
 <#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Xml" #>
 <#
 var content = File.ReadAllText(Host.ResolvePath("functions.json"));
@@ -34,6 +35,7 @@ using System.Linq;
 
 namespace ahd.Graphite.Base
 {
+#pragma warning disable CS0419 // Ambiguous reference in cref attribute
 	public abstract partial class SeriesListBase
 	{
 <#
@@ -95,6 +97,7 @@ foreach(var line in overload.GetSummary())
 <# } #>
 	}
 <# } #>
+#pragma warning restore CS0419 // Ambiguous reference in cref attribute
 }
 <#+
 private static IEnumerable<JFunction> OptionalOverloads(JFunction function)
@@ -172,6 +175,7 @@ private static void ReplaceType(JToken token, string from, string to)
 class JFunction
 {
 	private readonly JToken _jtoken;
+	private static readonly Regex _pyFuncRegex = new Regex(":py:func:`([a-zA-Z]+)( &lt;([a-zA-Z]+)&gt;)?`");
 
 	public JFunction(JToken function)
 	{
@@ -281,7 +285,14 @@ class JFunction
 				para = true;
 			}
 			wasEmpty = false;
-			yield return XmlEscape(line);
+			line = XmlEscape(line);
+			line = _pyFuncRegex.Replace(line, x => {
+				var value = x.Groups[3].Value;
+				if (String.IsNullOrEmpty(value))
+					value = x.Groups[1].Value;
+				return $"<see cref=\"SeriesListBase.{Char.ToUpper(value[0])}{value.Substring(1)}\"/>";
+			});
+			yield return line;
 		}
 		if (para)
 		{

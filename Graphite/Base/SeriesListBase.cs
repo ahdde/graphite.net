@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ahd.Graphite.Functions;
 
 namespace ahd.Graphite.Base
 {
@@ -141,6 +142,68 @@ namespace ahd.Graphite.Base
         public SeriesListFunction Template(params string[] defaultValues)
         {
             return new SeriesListFunction("template", Merge(this, defaultValues.Select(SingleQuote).ToArray()));  
+        }
+
+        /// <summary>
+		/// Short form: ``reduce()``
+		/// <para>
+		/// Takes a list of seriesLists and reduces it to a list of series by means of the reduceFunction.
+		/// </para>
+		/// <para>
+		/// Reduction is performed by matching the reduceNode in each series against the list of
+		/// reduceMatchers. Then each series is passed to the reduceFunction as arguments in the order
+		/// given by reduceMatchers. The reduceFunction should yield a single series.
+		/// </para>
+		/// <para>
+		/// The resulting list of series are aliased so that they can easily be nested in other functions.
+		/// </para>
+		/// <para>
+		/// **Example**: Map/Reduce asPercent(bytes_used,total_bytes) for each server
+		/// </para>
+		/// <para>
+		/// Assume that metrics in the form below exist:
+		/// </para>
+		/// <code>
+		///      servers.server1.disk.bytes_used
+		///      servers.server1.disk.total_bytes
+		///      servers.server2.disk.bytes_used
+		///      servers.server2.disk.total_bytes
+		///      servers.server3.disk.bytes_used
+		///      servers.server3.disk.total_bytes
+		///      ...
+		///      servers.serverN.disk.bytes_used
+		///      servers.serverN.disk.total_bytes
+		/// </code>
+		/// <para>
+		/// To get the percentage of disk used for each server:
+		/// </para>
+		/// <code>
+		///     reduceSeries(mapSeries(servers.*.disk.*,1),"asPercent",3,"bytes_used","total_bytes") =&gt;
+		/// </code>
+		/// <para>
+		///       alias(asPercent(servers.server1.disk.bytes_used,servers.server1.disk.total_bytes),"servers.server1.disk.reduce.asPercent"),
+		///       alias(asPercent(servers.server2.disk.bytes_used,servers.server2.disk.total_bytes),"servers.server2.disk.reduce.asPercent"),
+		///       alias(asPercent(servers.server3.disk.bytes_used,servers.server3.disk.total_bytes),"servers.server3.disk.reduce.asPercent"),
+		///       ...
+		///       alias(asPercent(servers.serverN.disk.bytes_used,servers.serverN.disk.total_bytes),"servers.serverN.disk.reduce.asPercent")
+		/// </para>
+		/// <para>
+		/// In other words, we will get back the following metrics::
+		/// </para>
+		/// <para>
+		///     servers.server1.disk.reduce.asPercent
+		///     servers.server2.disk.reduce.asPercent
+		///     servers.server3.disk.reduce.asPercent
+		///     ...
+		///     servers.serverN.disk.reduce.asPercent
+		/// </para>
+		/// <para>
+		/// .. seealso:: <see cref="MapSeries(uint[])"/>
+		/// </para>
+		/// </summary>
+        public SeriesListFunction ReduceSeries(string reduceFunction, uint reduceNode, params string[] reduceMatchers)
+        {
+            return new ReduceSeriesSeriesList(this, reduceFunction, reduceNode, reduceMatchers);
         }
 
         /// <summary>
