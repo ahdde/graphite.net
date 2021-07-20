@@ -55,7 +55,7 @@ namespace ahd.Graphite
         /// <returns>list of all metrics</returns>
         public async Task<string[]> GetAllMetricsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var response = await _client.GetAsync("/metrics/index.json", cancellationToken).ConfigureAwait(false);
+            var response = await _client.GetAsync("metrics/index.json", cancellationToken).ConfigureAwait(false);
             await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
             return await response.Content.ReadAsAsync<string[]>(cancellationToken).ConfigureAwait(false);
         }
@@ -81,7 +81,7 @@ namespace ahd.Graphite
             if (until.HasValue)
                 untilUnix = Datapoint.ToUnixTimestamp(until.Value).ToString();
 
-            var uri = String.Format("/metrics/find?query={0}&format=completer&wildcards={1}&from={2}&until={3}",
+            var uri = String.Format("metrics/find?query={0}&format=completer&wildcards={1}&from={2}&until={3}",
                 query, wildcards ? 1 : 0, fromUnix, untilUnix);
 
             var response = await _client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
@@ -132,7 +132,7 @@ namespace ahd.Graphite
             }
 
             var body = new FormUrlEncodedContent(values);
-            var response = await _client.PostAsync("/metrics/expand", body, cancellationToken).ConfigureAwait(false);
+            var response = await _client.PostAsync("metrics/expand", body, cancellationToken).ConfigureAwait(false);
             await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
             return (await response.Content.ReadAsAsync<GraphiteExpandResult>(cancellationToken).ConfigureAwait(false))
                 .Results;
@@ -207,7 +207,7 @@ namespace ahd.Graphite
             }
             var body = new StringContent(sb.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
 
-            var response = await _client.PostAsync("/render", body, cancellationToken).ConfigureAwait(false);
+            var response = await _client.PostAsync("render", body, cancellationToken).ConfigureAwait(false);
             await response.EnsureSuccessStatusCodeAsync().ConfigureAwait(false);
 
             return await response.Content.ReadAsAsync<GraphiteMetricData[]>(cancellationToken).ConfigureAwait(false);
