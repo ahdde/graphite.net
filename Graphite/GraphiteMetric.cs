@@ -71,8 +71,6 @@ namespace ahd.Graphite
                         case nameof(name):
                             name = reader.GetString();
                             break;
-                        default:
-                            throw new JsonException($"Unexpected Property Name: {propertyName}");
                     }
                 }
             }
