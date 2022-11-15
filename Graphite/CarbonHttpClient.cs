@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using ahd.Graphite.Exceptions;
+using Razorvine.Pickle;
 
 namespace ahd.Graphite
 {
@@ -15,7 +17,6 @@ namespace ahd.Graphite
     public class CarbonHttpClient:AbstractCarbonClient
     {
         private readonly HttpClient _client;
-        private readonly PickleGraphiteFormatter _formatter;
         
         /// <summary>
         /// Creates a client for localhost:2007
@@ -47,7 +48,6 @@ namespace ahd.Graphite
         public CarbonHttpClient(HttpClient client)
         {
             _client = client;
-            _formatter = new PickleGraphiteFormatter();
         }
 
         /// <inheritdoc />
@@ -59,10 +59,11 @@ namespace ahd.Graphite
 
         private HttpContent Serialize(ICollection<Datapoint> datapoints)
         {
-            using (var ms = new MemoryStream())
+            using (var pickler = new Pickler())
             {
-                _formatter.Write(ms, datapoints);
-                return new ByteArrayContent(ms.ToArray())
+                var data = datapoints.Select(x => new object[] { x.Series, new object[] { x.UnixTimestamp, x.Value } });
+                var pickled = pickler.dumps(data);
+                return new ByteArrayContent(pickled)
                 {
                     Headers =
                     {
