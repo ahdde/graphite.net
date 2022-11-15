@@ -18,9 +18,9 @@ namespace ahd.Graphite
         private readonly PickleGraphiteFormatter _formatter;
         
         /// <summary>
-        /// Creates a client for localhost
+        /// Creates a client for localhost:2007
         /// </summary>
-        public CarbonHttpClient():this("https://localhost")
+        public CarbonHttpClient():this("http://localhost:2007")
         {
         }
 
