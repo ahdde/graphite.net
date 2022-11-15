@@ -9,7 +9,7 @@ namespace ahd.Graphite
     /// <summary>
     /// Client for submitting data to carbon
     /// </summary>
-    public class CarbonClient
+    public class CarbonClient:AbstractCarbonClient
     {
         private readonly CarbonConnectionPool _carbonPool;
         
@@ -27,6 +27,7 @@ namespace ahd.Graphite
         public CarbonClient(string host):this(host, new PlaintextGraphiteFormatter())
         {
         }
+
         /// <summary>
         /// Creates a client with the specified host and formatter
         /// </summary>
@@ -63,64 +64,6 @@ namespace ahd.Graphite
         /// Use ip dual stack for sending metrics. Defaults to true.
         /// </summary>
         public bool UseDualStack { get; set; }
-        
-        /// <summary>
-        /// Send a single datapoint
-        /// </summary>
-        /// <param name="series">metric path</param>
-        /// <param name="value">metric value</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns></returns>
-        public Task SendAsync(string series, double value, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return SendAsync(series, value, DateTime.Now, cancellationToken);
-        }
-
-        /// <summary>
-        /// Send a single datapoint
-        /// </summary>
-        /// <param name="series">metric path</param>
-        /// <param name="value">metric value</param>
-        /// <param name="timestamp">metric timestamp</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns></returns>
-        public Task SendAsync(string series, double value, DateTime timestamp, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return SendAsync(new []{new Datapoint(series, value, timestamp)}, cancellationToken);
-        }
-
-        /// <summary>
-        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
-        /// </summary>
-        /// <param name="datapoints"></param>
-        /// <returns></returns>
-        public Task SendAsync(params Datapoint[] datapoints)
-        {
-            return SendAsync(datapoints, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
-        /// </summary>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <param name="datapoints"></param>
-        /// <returns></returns>
-        public Task SendAsync(CancellationToken cancellationToken, params Datapoint[] datapoints)
-        {
-            return SendAsync(datapoints, cancellationToken);
-        }
-
-        /// <summary>
-        /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
-        /// </summary>
-        /// <param name="datapoints"></param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        /// <returns></returns>
-        public Task SendAsync(Datapoint[] datapoints, CancellationToken cancellationToken)
-        {
-            ICollection<Datapoint> points = datapoints;
-            return SendAsync(points, cancellationToken);
-        }
 
         /// <summary>
         /// Send a list of datapoints in up to <see cref="BatchSize"/> batches
@@ -128,7 +71,7 @@ namespace ahd.Graphite
         /// <param name="datapoints"></param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public async Task SendAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task SendAsync(ICollection<Datapoint> datapoints, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (datapoints == null || datapoints.Count == 0) throw new ArgumentNullException(nameof(datapoints));
             var batches = GetBatches(datapoints);
