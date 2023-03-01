@@ -16,9 +16,9 @@ namespace ahd.Graphite
         private static readonly Encoding _utfNoBom = new UTF8Encoding(false, true);
 
         /// <summary>
-        /// single space, will be trimmed by carbon
+        /// line break, will be trimmed by carbon and carbon-clickhouse
         /// </summary>
-        private static readonly byte[] _empty = {32};
+        private static readonly byte[] _empty = {0x0A};
 
         /// <summary>
         /// Creates a plaintext formatter with default port 2003
