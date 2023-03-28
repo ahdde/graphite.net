@@ -146,8 +146,8 @@ namespace ahd.Graphite
         /// <param name="until">specify the relative or absolute end to graph</param>
         /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
         /// <param name="maxDataPoints"></param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <param name="tz">specify time zone for from/until. Corresponds to 'tz' parameter in Graphite Render API.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
         public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null, string tz = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -162,8 +162,8 @@ namespace ahd.Graphite
         /// <param name="until">specify the relative or absolute end to graph</param>
         /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
         /// <param name="maxDataPoints"></param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <param name="tz">specify time zone for from/until. Corresponds to 'tz' parameter in Graphite Render API.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
         public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null, string tz = null, CancellationToken cancellationToken = default(CancellationToken))
         {
