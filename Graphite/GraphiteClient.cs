@@ -149,9 +149,9 @@ namespace ahd.Graphite
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <param name="tz">specify time zone for from/until. Corresponds to 'tz' parameter in Graphite Render API.</param>
         /// <returns></returns>
-        public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null, CancellationToken cancellationToken = default(CancellationToken), string tz = null)
+        public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null, string tz = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints, cancellationToken, tz);
+            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints, tz, cancellationToken);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace ahd.Graphite
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <param name="tz">specify time zone for from/until. Corresponds to 'tz' parameter in Graphite Render API.</param>
         /// <returns></returns>
-        public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null, CancellationToken cancellationToken = default(CancellationToken), string tz = null)
+        public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null, string tz = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (targets == null || targets.Length == 0) throw new ArgumentNullException(nameof(targets));
 
