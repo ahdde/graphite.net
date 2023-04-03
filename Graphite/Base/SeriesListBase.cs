@@ -124,7 +124,7 @@ namespace ahd.Graphite.Base
         
         /// <summary>
         /// allows the metric paths to contain named variables.
-        /// Variable values can be specified or overriden in <see cref="GraphiteClient.GetMetricsDataAsync(ahd.Graphite.Base.SeriesListBase,string,string,System.Collections.Generic.IDictionary{string,string},System.Nullable{ulong},System.Threading.CancellationToken)"/>
+        /// Variable values can be specified or overriden in <see cref="GraphiteClient.GetMetricsDataAsync(ahd.Graphite.Base.SeriesListBase,string,string,System.Collections.Generic.IDictionary{string,string},System.Nullable{ulong},System.String,System.Threading.CancellationToken)"/>
         /// </summary>
         /// <param name="defaultValues">default values for the template variables</param>
         /// <returns></returns>
@@ -135,7 +135,7 @@ namespace ahd.Graphite.Base
 
         /// <summary>
         /// allows the metric paths to contain positional variables.
-        /// Variable values can be specified or overriden in <see cref="GraphiteClient.GetMetricsDataAsync(ahd.Graphite.Base.SeriesListBase,string,string,System.Collections.Generic.IDictionary{string,string},System.Nullable{ulong},System.Threading.CancellationToken)"/>
+        /// Variable values can be specified or overriden in <see cref="GraphiteClient.GetMetricsDataAsync(ahd.Graphite.Base.SeriesListBase,string,string,System.Collections.Generic.IDictionary{string,string},System.Nullable{ulong},System.String,System.Threading.CancellationToken)"/>
         /// </summary>
         /// <param name="defaultValues">default values for the template variables</param>
         /// <returns></returns>
