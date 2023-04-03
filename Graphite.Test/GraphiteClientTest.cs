@@ -413,6 +413,30 @@ namespace ahd.Graphite.Test
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
+        public async Task CanGetMetricValuesWithSpecifiedTimezone()
+        {
+            var now = DateTimeOffset.Now.ToUnixTimeSeconds();
+            var roundedToMinutes = DateTimeOffset.FromUnixTimeSeconds(now - now % 60);
+            var value = roundedToMinutes.ToUnixTimeSeconds();
+            var metric = new GraphitePath("usage").Dot("unittest").Dot("timezone_specified");
+            var carbonClient = new CarbonClient(CarbonHost);
+            var graphiteClient = new GraphiteClient(GraphiteHost);
+
+            await carbonClient.SendAsync(new Datapoint(metric.ToString(), value, roundedToMinutes.UtcDateTime));
+            var actual = await graphiteClient.GetMetricsDataAsync(metric,
+                from: roundedToMinutes.AddMinutes(-1).ToString("HH:mm_yyyyMMdd"),
+                until: roundedToMinutes.AddMinutes(1).ToString("HH:mm_yyyyMMdd"), tz: "UTC");
+            
+            Assert.NotNull(actual);
+            Assert.NotEmpty(actual);
+            Assert.NotEmpty(actual[0].Datapoints);
+            var actualDatapoint = actual[0].Datapoints.FirstOrDefault(x => x.Timestamp == roundedToMinutes.UtcDateTime);
+            Assert.NotNull(actualDatapoint);
+            Assert.Equal(value, actualDatapoint.Value);
+        }
+
+        [Fact]
         public async Task CanQueryLongFormulas()
         {
             var client = new GraphiteClient(GraphiteHost.Replace("https", "http"));

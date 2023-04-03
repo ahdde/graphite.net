@@ -146,11 +146,12 @@ namespace ahd.Graphite
         /// <param name="until">specify the relative or absolute end to graph</param>
         /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
         /// <param name="maxDataPoints"></param>
+        /// <param name="tz">Time zone to convert all times into.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase target, string from = null, string until = null, IDictionary<string, string> template = null, ulong? maxDataPoints = null, string tz = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints, cancellationToken);
+            return GetMetricsDataAsync(new[] {target}, from, until, template, maxDataPoints, tz, cancellationToken);
         }
 
         /// <summary>
@@ -161,9 +162,10 @@ namespace ahd.Graphite
         /// <param name="until">specify the relative or absolute end to graph</param>
         /// <param name="template">The target metrics can use a special <see cref="SeriesListBase.Template(string[])"/> function which allows the metric paths to contain variables</param>
         /// <param name="maxDataPoints"></param>
+        /// <param name="tz">Time zone to convert all times into.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
-        public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<GraphiteMetricData[]> GetMetricsDataAsync(SeriesListBase[] targets, string from = null, string until = null, IDictionary<string,string> template = null, ulong? maxDataPoints = null, string tz = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (targets == null || targets.Length == 0) throw new ArgumentNullException(nameof(targets));
 
@@ -184,6 +186,11 @@ namespace ahd.Graphite
             if (!String.IsNullOrEmpty(until))
             {
                 values.Add(new KeyValuePair<string, string>("until", until));
+            }
+
+            if (!String.IsNullOrEmpty(tz))
+            {
+                values.Add(new KeyValuePair<string, string>("tz", tz));
             }
             if (template != null)
             {
