@@ -136,6 +136,12 @@ namespace ahd.Graphite
             try
             {
                 await _formatter.TestConnectionAsync(client.GetStream(), cancellationToken).ConfigureAwait(false);
+                //https://stackoverflow.com/a/2661876/19671
+                var socket = client.Client;
+                if (!socket.Connected) return false;
+                var poll = socket.Poll(1000, SelectMode.SelectRead);
+                var empty = socket.Available == 0;
+                if (poll && empty) return false;
                 return true;
             }
             catch (IOException ex) when (ex.InnerException is SocketException se && CheckSocketException(se))
